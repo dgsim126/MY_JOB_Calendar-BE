@@ -15,7 +15,7 @@ const showAllList = asyncHandler(async (req, res) => {
             attributes: [
                 'key', // 기본 키 컬럼이 'key'
                 'title', 'body', 'experience', 'education', 'stack',
-                'work_type', 'companyname', 'startdate', 'enddate', 'pic1',
+                'work_type', 'companyname', 'startdate', 'enddate', 'pic1', 'recruit_part',
                 [Sequelize.fn('COUNT', Sequelize.col('Scraps.key')), 'scrapCount'] // 스크랩 수 계산
             ],
             include: [
@@ -67,8 +67,38 @@ const showDetailInfo = asyncHandler(async (req, res) => {
             where: { companyName: recruitmentNoticeInfo.companyname }
         });
 
-        // 두 개의 객체를 하나의 객체로 합쳐서 응답
-        res.status(200).json({ recruitmentNoticeInfo, company });
+
+        if (!company) {
+            return res.status(404).json({ message: 'Company not found' });
+        }
+
+        // 🌟[로직추가] - 동일한 companyName을 가진 다른 채용 공고 리스트 조회
+        const otherRecruitmentNotices = await RecruitmentNoticeInfo.findAll({
+            where: {
+                companyName: recruitmentNoticeInfo.companyname, // companyName, name 유의할 것.
+                key: {
+                    [Sequelize.Op.ne]: key // 현재 조회된 공고는 제외
+                }
+            },
+            attributes: [
+                'key', // 기본 키 컬럼이 'key'
+                'title', 'body', 'experience', 'education', 'stack',
+                'work_type', 'companyname', 'startdate', 'enddate', 'pic1', 'recruit_part',
+                [Sequelize.fn('COUNT', Sequelize.col('Scraps.key')), 'scrapCount'] // 스크랩 수 계산
+            ],
+            include: [
+                {
+                    model: Scrap,
+                    attributes: []
+                }
+            ],
+            group: ['RecruitmentNoticeInfoModel.key'], // 기본 키 컬럼 기준 그룹화
+            raw: true
+        });
+
+
+        // 세 개의 객체를 하나의 객체로 합쳐서 응답 + 동일회사 다른 글 정보 추가
+        res.status(200).json({ recruitmentNoticeInfo, company, otherRecruitmentNotices });
     } catch (error) {
         console.error('Error fetching recruitment notice info:', error);
         res.status(500).json({ message: 'Internal Server Error' });

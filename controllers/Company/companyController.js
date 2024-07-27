@@ -13,6 +13,8 @@ const getCompanies = asyncHandler(async (req, res) => {
         'companyName',
         'establish',
         'logo',
+        'track',
+        'stack',
         [sequelize.fn('COUNT', sequelize.col('Scraps.companyID')), 'scrapCount']
       ],
       include: [{
