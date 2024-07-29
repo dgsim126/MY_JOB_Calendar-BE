@@ -10,8 +10,10 @@ const showAll = asyncHandler(async (req, res) => {
     const { studyboardkey } = req.params;
     // const userId = "user11"; // 현재 로그인한 id, 후에 쿠키를 통해 받아올 것
     const id= req.user.email;
+    console.log(id);
 
     try {
+        
         // 게시글 작성자 ID 가져오기
         const studyboard = await Studyboard.findByPk(studyboardkey, {
             attributes: ['id'],
@@ -22,7 +24,7 @@ const showAll = asyncHandler(async (req, res) => {
             return res.status(404).json({ message: "게시글을 찾을 수 없습니다." });
         }
 
-        console.log("로그인한 사용자 ID:", userId);
+        console.log("로그인한 사용자 ID:", id);
         console.log("게시글 작성자 ID:", studyboard.id);
 
         const data = await StudyboardComment.findAll({
@@ -32,7 +34,7 @@ const showAll = asyncHandler(async (req, res) => {
 
         const modifiedData = data.map(comment => {
             console.log("댓글 작성자 ID:", comment.id);
-            if (comment.isSecret && comment.id !== userId && studyboard.id !== userId) {
+            if (comment.isSecret && comment.id !== id && studyboard.id !== id) {
                 comment.comment = "비밀댓글입니다.";
             }
             return comment;

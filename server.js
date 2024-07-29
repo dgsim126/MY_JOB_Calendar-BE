@@ -6,6 +6,8 @@ const { sequelize } = require("./config/db");
 
 const cors = require('cors'); // cors 추가
 
+
+// 모델 초기화 및 관계 설정
 const User = require('./models/User/user');
 const Company = require('./models/Company/company');
 const Scrap = require('./models/Scrap/scrap');
@@ -41,7 +43,6 @@ FreeboardComment.associate({ Freeboard });
 Studyboard.associate({ StudyboardComment });
 StudyboardComment.associate({ Studyboard });
 
-
 const app = express();
 const port = 8080;
 
@@ -53,10 +54,10 @@ app.use(cors({
 // 데이터베이스 연결
 sequelize
 .sync({ force: true }) // 현재 모델 상태 반영(배포 시 false로 변환) // true 시 값 날라감
-.then(()=>{
+.then(() => {
     console.log('데이터베이스 연결 성공');
-    
-}).catch(err=>{
+})
+.catch(err => {
     console.log(err);
 });
 
@@ -97,6 +98,9 @@ app.use("/api/recruitmentNoticeInfo", require("./routers/ITInfo/RecruitmentNotic
 // 메인 캘린더
 app.use("/api/main", require("./routers/MainCalender/MainCalenderRoute"));
 app.use("/api/my", require("./routers/MyCalender/MyCalenderRoute"));
+
+// 인증 라우트 추가
+app.use('/api/auth', require("./routers/google/authRoute"));
 
 // 서버 시작
 app.listen(port, () => {

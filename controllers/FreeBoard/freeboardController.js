@@ -1,6 +1,8 @@
 const asyncHandler = require("express-async-handler");
 const FreeBoard = require("../../models/FreeBoard/freeboard");
 const FreeBoardComment = require("../../models/FreeBoard/freeboardComment"); // 댓글 모델 추가
+const { sequelize } = require('../../config/db'); // Sequelize 인스턴스 가져오기
+const { Op } = require('sequelize');
 
 /**
  * Base64 문자열을 바이너리 데이터로 변환
@@ -21,16 +23,31 @@ const binaryToBase64 = (binaryData) => {
 };
 
 /**
- * 모든 게시글 가져오기
+ * 모든 게시글 가져오기 (댓글 수 포함)
  * GET /api/freeboard
  */
 const showAll = asyncHandler(async (req, res) => {
     try {
-        const data = await FreeBoard.findAll();
+        // 모든 게시글을 가져오면서 댓글 수를 계산하여 포함
+        const data = await FreeBoard.findAll({
+            attributes: {
+                include: [
+                    [sequelize.fn('COUNT', sequelize.col('FreeBoardComments.commentKey')), 'commentCount']
+                ]
+            },
+            include: [
+                {
+                    model: FreeBoardComment,
+                    attributes: [] // 댓글의 세부정보를 포함하지 않음
+                }
+            ],
+            group: ['FreeBoard.key'] // group by 게시글의 key
+        });
+
         res.status(200).json(data);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "서버 에러." });
+        res.status(500).json({ message: "서버 오류가 발생했습니다." });
     }
 });
 
@@ -172,4 +189,38 @@ const deletePost = asyncHandler(async (req, res) => {
     }
 });
 
-module.exports = { showAll, showDetail, createPost, updatePost, deletePost };
+/**
+ * 제목으로 게시글 검색
+ * POST /api/freeboard/search
+ */
+const searchByTitle = asyncHandler(async (req, res) => {
+    const { title } = req.body; // 요청 본문에서 제목을 가져옴
+
+    if (!title) {
+        return res.status(400).json({ message: "검색어가 필요합니다." });
+    }
+
+    try {
+        const posts = await FreeBoard.findAll({
+            where: {
+                title: {
+                    [Op.like]: `%${title}%` // 제목에 검색어가 포함된 게시글 찾기
+                }
+            }
+        });
+
+        if (posts.length === 0) {
+            return res.status(404).json({ message: "게시글을 찾을 수 없습니다." });
+        }
+
+        res.status(200).json(posts);
+    } catch (error) {
+        console.error('Error searching posts by title:', error);
+        res.status(500).json({ message: "서버 오류가 발생했습니다." });
+    }
+});
+
+
+
+
+module.exports = { showAll, showDetail, createPost, updatePost, deletePost, searchByTitle };

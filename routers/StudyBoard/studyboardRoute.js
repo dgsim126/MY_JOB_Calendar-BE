@@ -7,7 +7,8 @@ const {
     showDetail, 
     createPost,  
     updatePost, 
-    deletePost 
+    deletePost,
+    searchByTitle
 } = require('../../controllers/StudyBoard/studyboardController');
 
 // const verifyToken = require('../middleware/token');
@@ -26,6 +27,9 @@ router.put('/update/:key', verifyToken, asyncHandler(updatePost));
 
 // 게시글 삭제
 router.delete('/delete/:key', verifyToken, asyncHandler(deletePost));
+
+// 제목으로 게시글 검색
+router.post('/search', asyncHandler(searchByTitle)); // 새로운 라우트 추가
 
 
 module.exports = router;

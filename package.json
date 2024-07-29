@@ -18,9 +18,11 @@
     "express": "^4.19.2",
     "express-async-handler": "^1.2.0",
     "express-ejs-layouts": "^2.5.1",
+    "googleapis": "^140.0.1",
     "jsonwebtoken": "^9.0.2",
     "mariadb": "^3.3.1",
     "nodemon": "^3.1.4",
+    "open": "^10.1.0",
     "sequelize": "^6.37.3",
     "sequelize-cli": "^6.6.2"
   }

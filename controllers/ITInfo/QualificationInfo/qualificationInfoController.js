@@ -3,6 +3,7 @@ const asyncHandler = require("express-async-handler");
 const QualificationInfo = require("../../../models/ITInfo/QualificationInfo/qualificationInfoModel");
 const Scrap = require("../../../models/Scrap/scrap");
 const { Sequelize } = require('sequelize');
+const { Op } = require('sequelize');
 
 /**
  * 모든 목록 가져오기 [자격증]
@@ -200,5 +201,36 @@ const deleteInfoAdmin = asyncHandler(async (req, res) => {
     res.status(204).send();
 });
 
+/**
+ * 제목으로 게시글 검색
+ * POST /api/qualificationInfo/search
+ */
+const searchByTitle = asyncHandler(async (req, res) => {
+    const { title } = req.body; // 요청 본문에서 제목을 가져옴
+
+    if (!title) {
+        return res.status(400).json({ message: "검색어가 필요합니다." });
+    }
+
+    try {
+        const posts = await QualificationInfo.findAll({
+            where: {
+                title: {
+                    [Op.like]: `%${title}%` // 제목에 검색어가 포함된 게시글 찾기
+                }
+            }
+        });
+
+        if (posts.length === 0) {
+            return res.status(404).json({ message: "게시글을 찾을 수 없습니다." });
+        }
+
+        res.status(200).json(posts);
+    } catch (error) {
+        console.error('Error searching posts by title:', error);
+        res.status(500).json({ message: "서버 오류가 발생했습니다." });
+    }
+});
+
 module.exports = { showAllList, showDetailInfo, scrapQualificationInfo,
-    deleteQualificationScrap, createInfoAdmin, deleteInfoAdmin };
+    deleteQualificationScrap, createInfoAdmin, deleteInfoAdmin, searchByTitle };
