@@ -28,7 +28,7 @@ const login = asyncHandler(async (req, res) => {
 
     // JWT 토큰을 쿠키에 설정
     res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
-
+    // res.headers = ~ headers를 통해 도메인 허용하도록, res.setHeaders('....', '...'); 모든 도메인을 허용하려면 와일드 카드
     // 로그인 성공 메세지 (관리자는 다른 메세지)
     const message = user.isAdmin ? 'Login successful as admin' : 'Login successful';
 
