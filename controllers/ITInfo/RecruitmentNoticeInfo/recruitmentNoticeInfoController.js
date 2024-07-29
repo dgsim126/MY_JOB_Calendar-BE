@@ -16,7 +16,7 @@ const showAllList = asyncHandler(async (req, res) => {
             attributes: [
                 'key', // 기본 키 컬럼이 'key'
                 'title', 'body', 'experience', 'education', 'stack',
-                'work_type', 'companyname', 'startdate', 'enddate', 'pic1',
+                'work_type', 'companyname', 'startdate', 'enddate', 'pic1', 'recruit_part',
                 [Sequelize.fn('COUNT', Sequelize.col('Scraps.key')), 'scrapCount'] // 스크랩 수 계산
             ],
             include: [
@@ -34,48 +34,6 @@ const showAllList = asyncHandler(async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
-
-// // --------------------------------------------------------------------------------------------------------
-// /**
-//  * 정보글 상세 조회 [채용공고]
-//  * GET /api/recruitmentNoticeInfo/:key
-//  */
-// const showDetailInfo = asyncHandler(async (req, res) => {
-//     const { key } = req.params;
-
-//     try {
-//         // 채용 공고 정보와 스크랩 수를 포함하여 조회
-//         const recruitmentNoticeInfo = await RecruitmentNoticeInfo.findOne({
-//             where: { key },
-//             include: [{
-//                 model: Scrap,
-//                 attributes: [] // 실제 데이터는 필요 없으므로 빈 배열
-//             }],
-//             attributes: {
-//                 // 모든 속성과 함께 스크랩 수를 포함
-//                 include: [
-//                     [Sequelize.fn('COUNT', Sequelize.col('Scraps.key')), 'scrapCount']
-//                 ]
-//             },
-//             group: ['RecruitmentNoticeInfoModel.key'] // 기본 키 컬럼 기준 그룹화
-//         });
-//         if (!recruitmentNoticeInfo) {
-//             return res.status(404).json({ message: 'Recruitment Notice Info not found' });
-//         }
-
-//         // companyName을 이용해 Company 모델에서 일치하는 튜플을 찾음
-//         const company = await Company.findOne({
-//             where: { companyName: recruitmentNoticeInfo.companyname }
-//         });
-
-//         // 두 개의 객체를 하나의 객체로 합쳐서 응답
-//         res.status(200).json({ recruitmentNoticeInfo, company });
-//     } catch (error) {
-//         console.error('Error fetching recruitment notice info:', error);
-//         res.status(500).json({ message: 'Internal Server Error' });
-//     }
-// });
-// --------------------------------------------------------------------------------------------------------
 
 /**
  * 정보글 상세 조회 [채용공고]
@@ -145,9 +103,41 @@ const showDetailInfo = asyncHandler(async (req, res) => {
             });
         }));
 
+        if (!company) {
+            return res.status(404).json({ message: 'Company not found' });
+        }
+
+        // 🌟[로직추가] - 동일한 companyName을 가진 다른 채용 공고 리스트 조회
+        const otherRecruitmentNotices = await RecruitmentNoticeInfo.findAll({
+            where: {
+                companyName: recruitmentNoticeInfo.companyname, // companyName, name 유의할 것.
+                key: {
+                    [Sequelize.Op.ne]: key // 현재 조회된 공고는 제외
+                }
+            },
+            attributes: [
+                'key', // 기본 키 컬럼이 'key'
+                'title', 'body', 'experience', 'education', 'stack',
+                'work_type', 'companyname', 'startdate', 'enddate', 'pic1', 'recruit_part',
+                [Sequelize.fn('COUNT', Sequelize.col('Scraps.key')), 'scrapCount'] // 스크랩 수 계산
+            ],
+            include: [
+                {
+                    model: Scrap,
+                    attributes: []
+                }
+            ],
+            group: ['RecruitmentNoticeInfoModel.key'], // 기본 키 컬럼 기준 그룹화
+            raw: true
+        });
+
+
+        // // 네 개의 객체를 하나의 객체로 합쳐서 응답 + 동일회사 다른 글 정보 추가
+        // res.status(200).json({ recruitmentNoticeInfo, company, otherRecruitmentNotices  });
         res.status(200).json({
             recruitmentNoticeInfo,
             company,
+            otherRecruitmentNotices,
             relatedNotices: detailedNotices
         });
     } catch (error) {
@@ -155,6 +145,7 @@ const showDetailInfo = asyncHandler(async (req, res) => {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 });
+
 
 
 /**

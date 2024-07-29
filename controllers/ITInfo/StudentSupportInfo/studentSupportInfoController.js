@@ -104,6 +104,7 @@ const deleteStudentSupportScrap = asyncHandler(async (req, res) => {
             userID
         }
     });
+    console.log(scrap);
 
     if (!scrap) {
         return res.status(404).send('Scrap not found');
