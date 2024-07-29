@@ -2,7 +2,10 @@ const asyncHandler = require('express-async-handler');
 const { sequelize } = require('../../config/db');
 const Company = require('../../models/Company/company');
 const Scrap = require('../../models/Scrap/scrap');
-const { Op } = require('sequelize');
+
+const RecruitmentNoticeInfo = require('../../models/ITInfo/RecruitmentNoticeInfo/recruitmentNoticeInfoModel');
+const { Sequelize } = require('sequelize');
+
 
 // GET api/company
 // 모든 회사의 특정 정보 (스크랩 인수 포함)
@@ -14,7 +17,14 @@ const getCompanies = asyncHandler(async (req, res) => {
         'companyName',
         'establish',
         'logo',
-        [sequelize.fn('COUNT', sequelize.col('Scraps.companyID')), 'scrapCount']
+        'track',
+        'stack',
+        [sequelize.fn('COUNT', sequelize.col('Scraps.companyID')), 'scrapCount'],
+        [sequelize.literal(`(
+          SELECT COUNT(*)
+          FROM recruitmentNoticeInfo
+          WHERE recruitmentNoticeInfo.companyname = Company.companyName
+        )`), 'recruitmentNoticeCount'] // 채용공고에서는 companyname임에 주의.
       ],
       include: [{
         model: Scrap,
@@ -55,11 +65,38 @@ const getCompanyById = asyncHandler(async (req, res) => {
     const tracks = company.track ? company.track.split(',') : [];
     const stacks = company.stack ? company.stack.split(',') : [];
 
+
+// 🌟[로직추가] - 동일한 track을 가진 다른 회사 리스트 조회
+const otherCompanies = await Company.findAll({
+  where: {
+    track: company.track,
+    companyID: {
+      [Sequelize.Op.ne]: companyID // 현재 조회된 회사를 제외시킨다.
+    }
+  },
+  attributes: [
+    'companyID',
+    'companyName',
+    'establish',
+    'logo',
+    'track',
+    'stack',
+    [sequelize.fn('COUNT', sequelize.col('Scraps.companyID')), 'scrapCount']
+  ],
+  include: [{
+    model: Scrap,
+    attributes: []
+  }],
+  group: ['Company.companyID']
+});
+
+
     // JSON 응답에 track과 stack 배열 포함
     const companyData = {
       ...company.toJSON(),
       track: tracks,
-      stack: stacks
+      stack: stacks,
+      otherCompanies // 다른 비슷한 회사정보 추가.
     };
 
     res.status(200).json(companyData);
