@@ -103,12 +103,6 @@ const showDetailInfo = asyncHandler(async (req, res) => {
             });
         }));
 
-        // res.status(200).json({
-        //     recruitmentNoticeInfo,
-        //     company,
-        //     relatedNotices: detailedNotices
-        // });
-
         if (!company) {
             return res.status(404).json({ message: 'Company not found' });
         }
@@ -138,7 +132,7 @@ const showDetailInfo = asyncHandler(async (req, res) => {
         });
 
 
-        // // 세 개의 객체를 하나의 객체로 합쳐서 응답 + 동일회사 다른 글 정보 추가
+        // // 네 개의 객체를 하나의 객체로 합쳐서 응답 + 동일회사 다른 글 정보 추가
         // res.status(200).json({ recruitmentNoticeInfo, company, otherRecruitmentNotices  });
         res.status(200).json({
             recruitmentNoticeInfo,
@@ -151,6 +145,7 @@ const showDetailInfo = asyncHandler(async (req, res) => {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 });
+
 
 
 /**
