@@ -94,9 +94,6 @@ app.use("/api/studentSupportInfo", require("./routers/ITInfo/StudentSupportInfo/
 app.use("/api/qualificationInfo", require("./routers/ITInfo/QualificationInfo/qualificationInfoRoute"));
 app.use("/api/recruitmentNoticeInfo", require("./routers/ITInfo/RecruitmentNoticeInfo/recruitmentNoticeInfoRoute"));
 
-// 메인 페이지
-// app.use('/api', require("./routers/Main/mainRoute"));
-
 // 메인 캘린더
 app.use("/api/main", require("./routers/MainCalender/MainCalenderRoute"));
 app.use("/api/my", require("./routers/MyCalender/MyCalenderRoute"));
