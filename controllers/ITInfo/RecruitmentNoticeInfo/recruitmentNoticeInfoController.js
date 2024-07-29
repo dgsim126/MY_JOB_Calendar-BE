@@ -35,48 +35,6 @@ const showAllList = asyncHandler(async (req, res) => {
     }
 });
 
-// // --------------------------------------------------------------------------------------------------------
-// /**
-//  * 정보글 상세 조회 [채용공고]
-//  * GET /api/recruitmentNoticeInfo/:key
-//  */
-// const showDetailInfo = asyncHandler(async (req, res) => {
-//     const { key } = req.params;
-
-//     try {
-//         // 채용 공고 정보와 스크랩 수를 포함하여 조회
-//         const recruitmentNoticeInfo = await RecruitmentNoticeInfo.findOne({
-//             where: { key },
-//             include: [{
-//                 model: Scrap,
-//                 attributes: [] // 실제 데이터는 필요 없으므로 빈 배열
-//             }],
-//             attributes: {
-//                 // 모든 속성과 함께 스크랩 수를 포함
-//                 include: [
-//                     [Sequelize.fn('COUNT', Sequelize.col('Scraps.key')), 'scrapCount']
-//                 ]
-//             },
-//             group: ['RecruitmentNoticeInfoModel.key'] // 기본 키 컬럼 기준 그룹화
-//         });
-//         if (!recruitmentNoticeInfo) {
-//             return res.status(404).json({ message: 'Recruitment Notice Info not found' });
-//         }
-
-//         // companyName을 이용해 Company 모델에서 일치하는 튜플을 찾음
-//         const company = await Company.findOne({
-//             where: { companyName: recruitmentNoticeInfo.companyname }
-//         });
-
-//         // 두 개의 객체를 하나의 객체로 합쳐서 응답
-//         res.status(200).json({ recruitmentNoticeInfo, company });
-//     } catch (error) {
-//         console.error('Error fetching recruitment notice info:', error);
-//         res.status(500).json({ message: 'Internal Server Error' });
-//     }
-// });
-// --------------------------------------------------------------------------------------------------------
-
 /**
  * 정보글 상세 조회 [채용공고]
  * GET /api/recruitmentNoticeInfo/:key
