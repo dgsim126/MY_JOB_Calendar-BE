@@ -1,13 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const verifyToken = require('../../../middleware/token');
+const {verifyToken} = require('../../../middleware/token');
+const asyncHandler = require("express-async-handler");
 const {
     showAllList,
     showDetailInfo,
     scrapQualificationInfo,
     deleteQualificationScrap,
     createInfoAdmin,
-    deleteInfoAdmin
+    deleteInfoAdmin,
+    searchByTitle
 } = require('../../../controllers/ITInfo/QualificationInfo/qualificationInfoController');
 
 // 모든 목록 가져오기 [자격증] - GET /api/qualificationInfo
@@ -27,5 +29,8 @@ router.post('/admin', createInfoAdmin);
 
 // ⭐ 정보글 관리자가 직접 삭제 [자격증] - DELETE /api/qualificationInfo/admin/delete/:key
 router.delete('/admin/delete/:key', deleteInfoAdmin);
+
+// 제목으로 게시글 검색
+router.post('/search', asyncHandler(searchByTitle)); // 새로운 라우트 추가
 
 module.exports = router;

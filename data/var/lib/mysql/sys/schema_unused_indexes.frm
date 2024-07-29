@@ -7,11 +7,7 @@ definer_user=mariadb.sys
 definer_host=localhost
 suid=0
 with_check_option=0
-<<<<<<< HEAD
-timestamp=0001721889272368214
-=======
-timestamp=0001721822986703349
->>>>>>> fc35c9ad75c8561d47f48a9ad219a45c556bf75b
+timestamp=0001722247948342896
 create-version=2
 source=SELECT object_schema,\n       object_name,\n       index_name\n  FROM performance_schema.table_io_waits_summary_by_index_usage\n WHERE index_name IS NOT NULL\n   AND count_star = 0\n   AND object_schema != \'mysql\'\n   AND index_name != \'PRIMARY\'\n ORDER BY object_schema, object_name;
 client_cs_name=utf8mb3

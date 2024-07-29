@@ -7,11 +7,7 @@ definer_user=mariadb.sys
 definer_host=localhost
 suid=0
 with_check_option=0
-<<<<<<< HEAD
-timestamp=0001721889272222490
-=======
-timestamp=0001721822986590524
->>>>>>> fc35c9ad75c8561d47f48a9ad219a45c556bf75b
+timestamp=0001722247948142121
 create-version=2
 source=SELECT OBJECT_SCHEMA AS table_schema,\n       OBJECT_NAME AS table_name,\n       INDEX_NAME as index_name,\n       COUNT_FETCH AS rows_selected,\n       SUM_TIMER_FETCH AS select_latency,\n       COUNT_INSERT AS rows_inserted,\n       SUM_TIMER_INSERT AS insert_latency,\n       COUNT_UPDATE AS rows_updated,\n       SUM_TIMER_UPDATE AS update_latency,\n       COUNT_DELETE AS rows_deleted,\n       SUM_TIMER_INSERT AS delete_latency\n  FROM performance_schema.table_io_waits_summary_by_index_usage\n WHERE index_name IS NOT NULL\n ORDER BY sum_timer_wait DESC;
 client_cs_name=utf8mb3

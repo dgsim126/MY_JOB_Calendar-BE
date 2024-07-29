@@ -7,11 +7,7 @@ definer_user=mariadb.sys
 definer_host=localhost
 suid=0
 with_check_option=0
-<<<<<<< HEAD
-timestamp=0001721889271769313
-=======
-timestamp=0001721822986254802
->>>>>>> fc35c9ad75c8561d47f48a9ad219a45c556bf75b
+timestamp=0001722247947539493
 create-version=2
 source=SELECT variable_name, variable_value\n  FROM performance_schema.global_status\n WHERE variable_name LIKE \'perf%lost\'\n   AND variable_value > 0;
 client_cs_name=utf8mb3

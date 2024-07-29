@@ -7,11 +7,7 @@ definer_user=mariadb.sys
 definer_host=localhost
 suid=0
 with_check_option=0
-<<<<<<< HEAD
-timestamp=0001721889271574412
-=======
-timestamp=0001721822986082946
->>>>>>> fc35c9ad75c8561d47f48a9ad219a45c556bf75b
+timestamp=0001722247947297986
 create-version=2
 source=SELECT IF(LOCATE(\'.\', ibp.table_name) = 0, \'InnoDB System\', REPLACE(SUBSTRING_INDEX(ibp.table_name, \'.\', 1), \'`\', \'\')) AS object_schema,\n       SUM(IF(ibp.compressed_size = 0, 16384, compressed_size)) AS allocated,\n       SUM(ibp.data_size) AS data,\n       COUNT(ibp.page_number) AS pages,\n       COUNT(IF(ibp.is_hashed, 1, NULL)) AS pages_hashed,\n       COUNT(IF(ibp.is_old, 1, NULL)) AS pages_old,\n       ROUND(IFNULL(SUM(ibp.number_records)/NULLIF(COUNT(DISTINCT ibp.index_name), 0), 0)) AS rows_cached\n  FROM information_schema.innodb_buffer_page ibp\n WHERE table_name IS NOT NULL\n GROUP BY object_schema\n ORDER BY SUM(IF(ibp.compressed_size = 0, 16384, compressed_size)) DESC;
 client_cs_name=utf8mb3

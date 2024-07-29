@@ -1,6 +1,8 @@
 const asyncHandler = require("express-async-handler");
 const StudyBoard= require("../../models/StudyBoard/studyboard");
 const StudyBoardComment = require("../../models/StudyBoard/studyboardComment"); // 댓글 모델 추가
+const { Op } = require('sequelize');
+const { sequelize } = require('../../config/db'); // Sequelize 인스턴스 가져오기
 // const bcrypt = require("bcrypt");
 
 /**
@@ -22,18 +24,34 @@ const binaryToBase64 = (binaryData) => {
 };
 
 /**
- * 모든 게시글 가져오기
+ * 모든 게시글 가져오기 (댓글 수 포함)
  * GET /api/studyboard
  */
 const showAll = asyncHandler(async (req, res) => {
-    try{
-        const data= await StudyBoard.findAll();
+    try {
+        // 모든 게시글을 가져오면서 댓글 수를 계산하여 포함
+        const data = await StudyBoard.findAll({
+            attributes: {
+                include: [
+                    [sequelize.fn('COUNT', sequelize.col('StudyboardComments.commentKey')), 'commentCount']
+                ]
+            },
+            include: [
+                {
+                    model: StudyBoardComment,
+                    attributes: [] // 댓글의 세부정보를 포함하지 않음
+                }
+            ],
+            group: ['StudyBoard.key'] // group by 게시글의 key
+        });
+
         res.status(200).json(data);
-    }catch(error){
+    } catch (error) {
         console.error(error);
-        res.status(500);
+        res.status(500).json({ message: "서버 오류가 발생했습니다." });
     }
 });
+
 
 /**
  * 게시글 상세 조회
@@ -179,4 +197,36 @@ const deletePost = asyncHandler(async (req, res) => {
     }
 });
 
-module.exports = { showAll, showDetail, createPost, updatePost, deletePost };
+/**
+ * 제목으로 게시글 검색
+ * POST /api/studyboard/search
+ */
+const searchByTitle = asyncHandler(async (req, res) => {
+    const { title } = req.body; // 요청 본문에서 제목을 가져옴
+    console.log(title);
+
+    if (!title) {
+        return res.status(400).json({ message: "검색어가 필요합니다." });
+    }
+
+    try {
+        const posts = await StudyBoard.findAll({
+            where: {
+                title: {
+                    [Op.like]: `%${title}%` // 제목에 검색어가 포함된 게시글 찾기
+                }
+            }
+        });
+
+        if (posts.length === 0) {
+            return res.status(404).json({ message: "게시글을 찾을 수 없습니다." });
+        }
+
+        res.status(200).json(posts);
+    } catch (error) {
+        console.error('Error searching posts by title:', error);
+        res.status(500).json({ message: "서버 오류가 발생했습니다." });
+    }
+});
+
+module.exports = { showAll, showDetail, createPost, updatePost, deletePost, searchByTitle};

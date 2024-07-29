@@ -7,11 +7,7 @@ definer_user=mariadb.sys
 definer_host=localhost
 suid=0
 with_check_option=0
-<<<<<<< HEAD
-timestamp=0001721889272135167
-=======
-timestamp=0001721822986525761
->>>>>>> fc35c9ad75c8561d47f48a9ad219a45c556bf75b
+timestamp=0001722247948024174
 create-version=2
 source=SELECT event_name,\n       current_count_used AS current_count,\n       sys.format_bytes(current_number_of_bytes_used) AS current_alloc,\n       sys.format_bytes(IFNULL(current_number_of_bytes_used / NULLIF(current_count_used, 0), 0)) AS current_avg_alloc,\n       high_count_used AS high_count,\n       sys.format_bytes(high_number_of_bytes_used) AS high_alloc,\n       sys.format_bytes(IFNULL(high_number_of_bytes_used / NULLIF(high_count_used, 0), 0)) AS high_avg_alloc\n  FROM performance_schema.memory_summary_global_by_event_name\n WHERE current_number_of_bytes_used > 0\n ORDER BY current_number_of_bytes_used DESC;
 client_cs_name=utf8mb3

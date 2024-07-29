@@ -1,8 +1,9 @@
 const asyncHandler = require("express-async-handler");
-// const Company = require("../../models/Company/company");
 const QualificationInfo = require("../../models/ITInfo/QualificationInfo/qualificationInfoModel");
 const RecruitmentNoticeInfo = require("../../models/ITInfo/RecruitmentNoticeInfo/recruitmentNoticeInfoModel");
 const StudentSupportInfo = require("../../models/ITInfo/StudentSupportInfo/studentSupportInfoModel");
+const Scrap = require('../../models/Scrap/scrap'); // 스크랩 테이블
+const User = require('../../models/User/user'); // User 모델
 
 /**
  * 모든 게시글 가져오기
@@ -10,17 +11,6 @@ const StudentSupportInfo = require("../../models/ITInfo/StudentSupportInfo/stude
  */
 const showAll = asyncHandler(async (req, res) => {
     try {
-        // // Company 정보 전달------------------------------------------------------------
-        // const companyData = await Company.findAll({
-        //     attributes: ['companyID', 'companyName']
-        // });
-        
-        // // Company 데이터에 'whatis' 속성을 추가
-        // const modifiedCompanyData = companyData.map(company => ({
-        //     ...company.toJSON(), // Sequelize 객체를 JSON 객체로 변환
-        //     whatis: 'company'
-        // }));
-
         // QualificationInfo 정보 전달----------------------------------------------------
         const qualificationData = await QualificationInfo.findAll({
             attributes: ['key', 'title', 'startdate', 'enddate']
@@ -54,19 +44,47 @@ const showAll = asyncHandler(async (req, res) => {
             whatis: 'studentSupport'
         }));
 
-        // 모든 데이터를 결합
-        const combinedData = [
-            // ...modifiedCompanyData,
+        // 모든 데이터 결합
+        let combinedData = [
             ...modifiedQualificationData,
             ...modifiedRecruitmentNoticeData,
             ...modifiedStudentSupportData
         ];
 
+        // 로그인한 사용자의 스크랩 정보 가져오기
+        if (req.user) {
+            const userId = req.user.userID;
+            const user = await User.findByPk(userId, {
+                attributes: [],
+                include: [{
+                    model: Scrap,
+                    attributes: ['studentSupportInfoKey', 'qualificationInfoKey', 'recruitmentNoticeInfoKey']
+                }]
+            });
+
+         // user가 null이 아닌지 확인
+         if (user && user.Scraps) {
+            const userScraps = user.Scraps;
+
+            console.log("User Scraps:", userScraps);
+
+            combinedData = combinedData.map(event => {
+                if (event.whatis === 'qualification') {
+                    event.isScrapped = userScraps.some(scrap => scrap.qualificationInfoKey === event.key);
+                } else if (event.whatis === 'recruitmentNotice') {
+                    event.isScrapped = userScraps.some(scrap => scrap.recruitmentNoticeInfoKey === event.key);
+                } else if (event.whatis === 'studentSupport') {
+                    event.isScrapped = userScraps.some(scrap => scrap.studentSupportInfoKey === event.key);
+                }
+                return event;
+            });
+        }
+    }
+
         res.status(200).json(combinedData);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "서버 오류가 발생했습니다." });
+        res.status(500).json({ message: '서버 오류' });
     }
 });
-
 module.exports = { showAll };

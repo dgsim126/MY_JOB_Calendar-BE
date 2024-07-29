@@ -2,8 +2,10 @@ const asyncHandler = require('express-async-handler');
 const { sequelize } = require('../../config/db');
 const Company = require('../../models/Company/company');
 const Scrap = require('../../models/Scrap/scrap');
+
 const RecruitmentNoticeInfo = require('../../models/ITInfo/RecruitmentNoticeInfo/recruitmentNoticeInfoModel');
 const { Sequelize } = require('sequelize');
+
 
 // GET api/company
 // 모든 회사의 특정 정보 (스크랩 인수 포함)
@@ -242,4 +244,35 @@ const deleteCompany = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { getCompanies, getCompanyById, scrapCompany, deleteScrap, createCompany, deleteCompany };
+/**
+ * 회사이름으로 게시글 검색
+ * POST /api/company/search
+ */
+const searchByCompanyName = asyncHandler(async (req, res) => {
+    const { companyName } = req.body; // 요청 본문에서 제목을 가져옴
+
+    if (!companyName) {
+        return res.status(400).json({ message: "검색어가 필요합니다." });
+    }
+
+    try {
+        const posts = await Company.findAll({
+            where: {
+                companyName: {
+                    [Op.like]: `%${companyName}%` // 제목에 검색어가 포함된 게시글 찾기
+                }
+            }
+        });
+
+        if (posts.length === 0) {
+            return res.status(404).json({ message: "게시글을 찾을 수 없습니다." });
+        }
+
+        res.status(200).json(posts);
+    } catch (error) {
+        console.error('Error searching posts by title:', error);
+        res.status(500).json({ message: "서버 오류가 발생했습니다." });
+    }
+});
+
+module.exports = { getCompanies, getCompanyById, scrapCompany, deleteScrap, createCompany, deleteCompany, searchByCompanyName };

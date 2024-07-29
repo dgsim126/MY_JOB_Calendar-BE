@@ -7,11 +7,7 @@ definer_user=mariadb.sys
 definer_host=localhost
 suid=0
 with_check_option=0
-<<<<<<< HEAD
-timestamp=0001721889272038458
-=======
-timestamp=0001721822986455193
->>>>>>> fc35c9ad75c8561d47f48a9ad219a45c556bf75b
+timestamp=0001722247947894118
 create-version=2
 source=SELECT IF(user IS NULL, \'background\', user) AS user,\n       SUM(current_count_used) AS current_count_used,\n       SUM(current_number_of_bytes_used) AS current_allocated,\n       IFNULL(SUM(current_number_of_bytes_used) / NULLIF(SUM(current_count_used), 0), 0) AS current_avg_alloc,\n       MAX(current_number_of_bytes_used) AS current_max_alloc,\n       SUM(sum_number_of_bytes_alloc) AS total_allocated\n  FROM performance_schema.memory_summary_by_user_by_event_name\n GROUP BY IF(user IS NULL, \'background\', user)\n ORDER BY SUM(current_number_of_bytes_used) DESC;
 client_cs_name=utf8mb3

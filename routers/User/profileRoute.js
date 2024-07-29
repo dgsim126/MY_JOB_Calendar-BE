@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { getProfile, updateProfile, deleteProfile } = require('../../controllers/User/profileController');
-
-const verifyToken = require('../../middleware/token');
+const { verifyToken } = require('../../middleware/token');
 
 // GET /api/profile
 router.get('/', verifyToken, getProfile);

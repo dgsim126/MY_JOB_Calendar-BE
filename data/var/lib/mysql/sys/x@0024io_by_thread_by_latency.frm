@@ -7,11 +7,7 @@ definer_user=mariadb.sys
 definer_host=localhost
 suid=0
 with_check_option=0
-<<<<<<< HEAD
-timestamp=0001721889271851169
-=======
-timestamp=0001721822986315365
->>>>>>> fc35c9ad75c8561d47f48a9ad219a45c556bf75b
+timestamp=0001722247947644037
 create-version=2
 source=SELECT IF(processlist_id IS NULL,\n             SUBSTRING_INDEX(name, \'/\', -1),\n             CONCAT(processlist_user, \'@\', processlist_host)\n          ) user,\n       SUM(count_star) total,\n       SUM(sum_timer_wait) total_latency,\n       MIN(min_timer_wait) min_latency,\n       AVG(avg_timer_wait) avg_latency,\n       MAX(max_timer_wait) max_latency,\n       thread_id,\n       processlist_id\n  FROM performance_schema.events_waits_summary_by_thread_by_event_name\n  LEFT JOIN performance_schema.threads USING (thread_id)\n WHERE event_name LIKE \'wait/io/file/%\'\n   AND sum_timer_wait > 0\n GROUP BY thread_id, processlist_id, user\n ORDER BY SUM(sum_timer_wait) DESC;
 client_cs_name=utf8mb3

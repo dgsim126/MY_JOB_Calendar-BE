@@ -7,11 +7,7 @@ definer_user=mariadb.sys
 definer_host=localhost
 suid=0
 with_check_option=0
-<<<<<<< HEAD
-timestamp=0001721889271966264
-=======
-timestamp=0001721822986401623
->>>>>>> fc35c9ad75c8561d47f48a9ad219a45c556bf75b
+timestamp=0001722247947797126
 create-version=2
 source=SELECT SUBSTRING_INDEX(event_name, \'/\', -2) AS event_name,\n       count_star AS total,\n       sum_timer_wait AS total_latency,\n       min_timer_wait AS min_latency,\n       avg_timer_wait AS avg_latency,\n       max_timer_wait AS max_latency,\n       count_read,\n       sum_number_of_bytes_read AS total_read,\n       IFNULL(sum_number_of_bytes_read / NULLIF(count_read, 0), 0) AS avg_read,\n       count_write,\n       sum_number_of_bytes_write AS total_written,\n       IFNULL(sum_number_of_bytes_write / NULLIF(count_write, 0), 0) AS avg_written,\n       sum_number_of_bytes_write + sum_number_of_bytes_read AS total_requested\n  FROM performance_schema.file_summary_by_event_name\n WHERE event_name LIKE \'wait/io/file/%\'\n   AND count_star > 0\n ORDER BY sum_number_of_bytes_write + sum_number_of_bytes_read DESC;
 client_cs_name=utf8mb3

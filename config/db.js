@@ -9,7 +9,7 @@ const sequelize = new Sequelize(
   {
     host: process.env.DB_HOST,
     dialect: 'mariadb', // MariaDB 사용
-    logging: true // 쿼리 로깅 비활성화
+    logging: false // 쿼리 로깅 비활성화
   }
   );
 

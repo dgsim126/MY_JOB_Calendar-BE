@@ -17,4 +17,21 @@ const verifyToken = (req, res, next) => {
     }
 };
 
-module.exports = verifyToken;
+const optionalVerifyToken = (req, res, next) => {
+    const token = req.cookies.token || req.headers['authorization'];
+    if (!token) {
+        req.user = null; // 토큰이 없는 경우, req.user를 null로 설정
+        return next();
+    }
+
+    try {
+        const decoded = jwt.verify(token, jwtSecret);
+        req.user = { userID: decoded.userID, email: decoded.email };
+        next();
+    } catch (error) {
+        req.user = null; // 유효하지 않은 토큰인 경우, req.user를 null로 설정
+        next();
+    }
+};
+
+module.exports = { verifyToken, optionalVerifyToken };

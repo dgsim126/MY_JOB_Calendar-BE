@@ -7,11 +7,7 @@ definer_user=mariadb.sys
 definer_host=localhost
 suid=0
 with_check_option=0
-<<<<<<< HEAD
-timestamp=0001721889273456336
-=======
-timestamp=0001721822987427392
->>>>>>> fc35c9ad75c8561d47f48a9ad219a45c556bf75b
+timestamp=0001722247949715062
 create-version=2
 source=SELECT * FROM sys.x$processlist\nWHERE conn_id IS NOT NULL AND command != \'Daemon\';
 client_cs_name=utf8mb3

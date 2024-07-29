@@ -7,11 +7,7 @@ definer_user=mariadb.sys
 definer_host=localhost
 suid=0
 with_check_option=0
-<<<<<<< HEAD
-timestamp=0001721889271928434
-=======
-timestamp=0001721822986371907
->>>>>>> fc35c9ad75c8561d47f48a9ad219a45c556bf75b
+timestamp=0001722247947747587
 create-version=2
 source=SELECT file_name AS file,\n       count_star AS total,\n       sum_timer_wait AS total_latency,\n       count_read,\n       sum_timer_read AS read_latency,\n       count_write,\n       sum_timer_write AS write_latency,\n       count_misc,\n       sum_timer_misc AS misc_latency\n  FROM performance_schema.file_summary_by_instance\n ORDER BY sum_timer_wait DESC;
 client_cs_name=utf8mb3
