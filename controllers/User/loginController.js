@@ -27,9 +27,11 @@ const login = asyncHandler(async (req, res) => {
     const token = jwt.sign(payload, jwtSecret, { expiresIn: '1h' });
 
     // JWT 토큰을 쿠키에 설정
-    res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
-
-    // 로그인 성공 메세지 (관리자는 다른 메세지)
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: false, // HTTPS가 아닌 경우 false로 설정
+      sameSite: 'None' // 크로스 도메인 쿠키 전송 허용
+    });
     const message = user.isAdmin ? 'Login successful as admin' : 'Login successful';
 
     // 로그인 성공 및 토큰 반환

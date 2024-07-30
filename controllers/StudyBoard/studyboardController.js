@@ -1,21 +1,57 @@
 const asyncHandler = require("express-async-handler");
 const StudyBoard= require("../../models/StudyBoard/studyboard");
 const StudyBoardComment = require("../../models/StudyBoard/studyboardComment"); // 댓글 모델 추가
+const { Op } = require('sequelize');
+const { sequelize } = require('../../config/db'); // Sequelize 인스턴스 가져오기
 // const bcrypt = require("bcrypt");
 
 /**
- * 모든 게시글 가져오기
+ * Base64 문자열을 바이너리 데이터로 변환
+ * @param {string} base64String - Base64로 인코딩된 문자열
+ * @returns {Buffer} - 변환된 바이너리 데이터
+ */
+const base64ToBinary = (base64String) => {
+    return Buffer.from(base64String, 'base64');
+};
+
+/**
+ * 바이너리 데이터를 Base64 문자열로 변환
+ * @param {Buffer} binaryData - 바이너리 데이터
+ * @returns {string} - Base64 문자열
+ */
+const binaryToBase64 = (binaryData) => {
+    return binaryData.toString('base64');
+};
+
+/**
+ * 모든 게시글 가져오기 (댓글 수 포함)
  * GET /api/studyboard
  */
 const showAll = asyncHandler(async (req, res) => {
-    try{
-        const data= await StudyBoard.findAll();
+    try {
+        // 모든 게시글을 가져오면서 댓글 수를 계산하여 포함
+        const data = await StudyBoard.findAll({
+            attributes: {
+                include: [
+                    [sequelize.fn('COUNT', sequelize.col('StudyboardComments.commentKey')), 'commentCount']
+                ]
+            },
+            include: [
+                {
+                    model: StudyBoardComment,
+                    attributes: [] // 댓글의 세부정보를 포함하지 않음
+                }
+            ],
+            group: ['StudyBoard.key'] // group by 게시글의 key
+        });
+
         res.status(200).json(data);
-    }catch(error){
+    } catch (error) {
         console.error(error);
-        res.status(500);
+        res.status(500).json({ message: "서버 오류가 발생했습니다." });
     }
 });
+
 
 /**
  * 게시글 상세 조회
@@ -29,6 +65,11 @@ const showDetail = asyncHandler(async (req, res) => {
             res.status(404);
             return;
         }
+         
+        // 바이너리 데이터를 Base64 문자열로 변환
+        if (data.pic1) data.pic1 = binaryToBase64(data.pic1);
+        if (data.pic2) data.pic2 = binaryToBase64(data.pic2);
+        
         res.status(200).json(data);
     }catch(error){
         console.error(error);
@@ -46,12 +87,16 @@ const createPost = asyncHandler(async (req, res) => {
     const id= req.user.email;
 
     try{
+        // Base64 문자열을 바이너리 데이터로 변환
+        const pic1Binary = pic1 ? base64ToBinary(pic1) : null;
+        const pic2Binary = pic2 ? base64ToBinary(pic2) : null;
+
         const newData= await StudyBoard.create({
             id,
             title,
             body,
-            pic1,
-            pic2
+            pic1: pic1Binary,
+            pic2: pic2Binary
         })
         res.status(201).json(newData);
         // 새로 생성된 레코드를 JSON 형태로 반환 (기본키와 기본값 포함)
@@ -83,6 +128,10 @@ const updatePost = asyncHandler(async (req, res) => {
             return res.status(403).json({ message: "수정 권한이 없음" });
         }
 
+        // Base64 문자열을 바이너리 데이터로 변환
+        const pic1Binary = pic1 ? base64ToBinary(pic1) : post.pic1;
+        const pic2Binary = pic2 ? base64ToBinary(pic2) : post.pic2;
+
         // 게시글 수정
         const updateData= await StudyBoard.update({
             title,
@@ -95,8 +144,14 @@ const updatePost = asyncHandler(async (req, res) => {
 
         // 수정된 데이터 다시 불러오기
         const afterUpdated= await StudyBoard.findByPk(key);
+
+        // 바이너리 데이터를 Base64 문자열로 변환
+        if (afterUpdated.pic1) afterUpdated.pic1 = binaryToBase64(afterUpdated.pic1);
+        if (afterUpdated.pic2) afterUpdated.pic2 = binaryToBase64(afterUpdated.pic2);
+
         res.status(200).json(afterUpdated);
     }catch(error){
+        console.log(error);
         res.status(500);
     }
 });
@@ -142,4 +197,36 @@ const deletePost = asyncHandler(async (req, res) => {
     }
 });
 
-module.exports = { showAll, showDetail, createPost, updatePost, deletePost };
+/**
+ * 제목으로 게시글 검색
+ * POST /api/studyboard/search
+ */
+const searchByTitle = asyncHandler(async (req, res) => {
+    const { title } = req.body; // 요청 본문에서 제목을 가져옴
+    console.log(title);
+
+    if (!title) {
+        return res.status(400).json({ message: "검색어가 필요합니다." });
+    }
+
+    try {
+        const posts = await StudyBoard.findAll({
+            where: {
+                title: {
+                    [Op.like]: `%${title}%` // 제목에 검색어가 포함된 게시글 찾기
+                }
+            }
+        });
+
+        if (posts.length === 0) {
+            return res.status(404).json({ message: "게시글을 찾을 수 없습니다." });
+        }
+
+        res.status(200).json(posts);
+    } catch (error) {
+        console.error('Error searching posts by title:', error);
+        res.status(500).json({ message: "서버 오류가 발생했습니다." });
+    }
+});
+
+module.exports = { showAll, showDetail, createPost, updatePost, deletePost, searchByTitle};

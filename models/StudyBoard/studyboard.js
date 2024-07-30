@@ -27,11 +27,11 @@ class Studyboard extends Sequelize.Model {
                 defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
             },
             pic1: {
-                type: DataTypes.STRING,
+                type: DataTypes.BLOB('medium'),
                 allowNull: true // 사진이 필수가 아니라면 true로 설정
             },
             pic2: {
-                type: DataTypes.STRING,
+                type: DataTypes.BLOB('medium'),
                 allowNull: true // 사진이 필수가 아니라면 true로 설정
             }
         }, {

@@ -3,6 +3,10 @@ const { sequelize } = require('../../config/db');
 const Company = require('../../models/Company/company');
 const Scrap = require('../../models/Scrap/scrap');
 
+const RecruitmentNoticeInfo = require('../../models/ITInfo/RecruitmentNoticeInfo/recruitmentNoticeInfoModel');
+const { Sequelize } = require('sequelize');
+
+
 // GET api/company
 // 모든 회사의 특정 정보 (스크랩 인수 포함)
 const getCompanies = asyncHandler(async (req, res) => {
@@ -13,7 +17,14 @@ const getCompanies = asyncHandler(async (req, res) => {
         'companyName',
         'establish',
         'logo',
-        [sequelize.fn('COUNT', sequelize.col('Scraps.companyID')), 'scrapCount']
+        'track',
+        'stack',
+        [sequelize.fn('COUNT', sequelize.col('Scraps.companyID')), 'scrapCount'],
+        [sequelize.literal(`(
+          SELECT COUNT(*)
+          FROM recruitmentNoticeInfo
+          WHERE recruitmentNoticeInfo.companyname = Company.companyName
+        )`), 'recruitmentNoticeCount'] // 채용공고에서는 companyname임에 주의.
       ],
       include: [{
         model: Scrap,
@@ -54,11 +65,38 @@ const getCompanyById = asyncHandler(async (req, res) => {
     const tracks = company.track ? company.track.split(',') : [];
     const stacks = company.stack ? company.stack.split(',') : [];
 
+
+// 🌟[로직추가] - 동일한 track을 가진 다른 회사 리스트 조회
+const otherCompanies = await Company.findAll({
+  where: {
+    track: company.track,
+    companyID: {
+      [Sequelize.Op.ne]: companyID // 현재 조회된 회사를 제외시킨다.
+    }
+  },
+  attributes: [
+    'companyID',
+    'companyName',
+    'establish',
+    'logo',
+    'track',
+    'stack',
+    [sequelize.fn('COUNT', sequelize.col('Scraps.companyID')), 'scrapCount']
+  ],
+  include: [{
+    model: Scrap,
+    attributes: []
+  }],
+  group: ['Company.companyID']
+});
+
+
     // JSON 응답에 track과 stack 배열 포함
     const companyData = {
       ...company.toJSON(),
       track: tracks,
-      stack: stacks
+      stack: stacks,
+      otherCompanies // 다른 비슷한 회사정보 추가.
     };
 
     res.status(200).json(companyData);
@@ -206,4 +244,35 @@ const deleteCompany = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { getCompanies, getCompanyById, scrapCompany, deleteScrap, createCompany, deleteCompany };
+/**
+ * 회사이름으로 게시글 검색
+ * POST /api/company/search
+ */
+const searchByCompanyName = asyncHandler(async (req, res) => {
+    const { companyName } = req.body; // 요청 본문에서 제목을 가져옴
+
+    if (!companyName) {
+        return res.status(400).json({ message: "검색어가 필요합니다." });
+    }
+
+    try {
+        const posts = await Company.findAll({
+            where: {
+                companyName: {
+                    [Op.like]: `%${companyName}%` // 제목에 검색어가 포함된 게시글 찾기
+                }
+            }
+        });
+
+        if (posts.length === 0) {
+            return res.status(404).json({ message: "게시글을 찾을 수 없습니다." });
+        }
+
+        res.status(200).json(posts);
+    } catch (error) {
+        console.error('Error searching posts by title:', error);
+        res.status(500).json({ message: "서버 오류가 발생했습니다." });
+    }
+});
+
+module.exports = { getCompanies, getCompanyById, scrapCompany, deleteScrap, createCompany, deleteCompany, searchByCompanyName };
