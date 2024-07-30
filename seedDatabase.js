@@ -78,6 +78,44 @@ const companies = [
     employee: "100",
     link: "http://testcompany.com",
     revenue: "1000000"
+  },
+  {
+    companyName: "ABC Corporation2",
+    establish: "2023-01-01T00:00:00.000Z",
+    logo: "test_logo.png",
+    pic1: "pic1.png",
+    pic2: "pic2.png",
+    pic3: "pic3.png",
+    pic4: "pic4.png",
+    pic5: "pic5.png",
+    body: "This is a test company.",
+    track: "Test Track",
+    stack: "Test Stack",
+    welfare: "Test Welfare",
+    salary: "Test Salary",
+    location: "Test Location",
+    employee: "100",
+    link: "http://testcompany.com",
+    revenue: "1000000"
+  },
+  {
+    companyName: "ABC Corporation3",
+    establish: "2023-01-01T00:00:00.000Z",
+    logo: "test_logo.png",
+    pic1: "pic1.png",
+    pic2: "pic2.png",
+    pic3: "pic3.png",
+    pic4: "pic4.png",
+    pic5: "pic5.png",
+    body: "This is a test company.",
+    track: "Test Track",
+    stack: "Test Stack",
+    welfare: "Test Welfare",
+    salary: "Test Salary",
+    location: "Test Location",
+    employee: "100",
+    link: "http://testcompany.com",
+    revenue: "1000000"
   }
 ];
 
