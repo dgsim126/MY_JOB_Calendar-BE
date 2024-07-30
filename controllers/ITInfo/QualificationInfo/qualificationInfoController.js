@@ -59,12 +59,23 @@ const showDetailInfo = asyncHandler(async (req, res) => {
         if (!qualificationInfo) {
             return res.status(404).json({ message: 'Qualification Info not found' });
         }
-        res.status(200).json(qualificationInfo);
+
+        // qualificationInfo에서 workview, qualification, testinfo, problems은 다중값이므로 배열처리(추가)
+        const modifiedQualificationInfo = {
+            ...qualificationInfo.toJSON(),
+            workview: qualificationInfo.workview ? qualificationInfo.workview.split(',').map(item => item.trim()) : [],
+            qualification: qualificationInfo.qualification ? qualificationInfo.qualification.split(',').map(item => item.trim()) : [],
+            testinfo: qualificationInfo.testinfo ? qualificationInfo.testinfo.split(',').map(item => item.trim()) : [],
+            problems: qualificationInfo.problems ? qualificationInfo.problems.split(',').map(item => item.trim()) : []
+        };
+
+        res.status(200).json(modifiedQualificationInfo);
     } catch (error) {
         console.error('Error fetching qualification info:', error);
         res.status(500).send('Internal Server Error');
     }
 });
+
 
 /**
  * POST /api/qualificationInfo/:qualificationInfoKey/scrap
