@@ -16,7 +16,7 @@ const showAllList = asyncHandler(async (req, res) => {
             attributes: [
                 'key', // 기본 키 컬럼이 'key'
                 'title', 'body', 'experience', 'education', 'stack',
-                'work_type', 'companyname', 'startdate', 'enddate', 'pic1',
+                'work_type', 'companyname', 'startdate', 'enddate', 'pic1', 'recruit_part',
                 [Sequelize.fn('COUNT', Sequelize.col('Scraps.key')), 'scrapCount'] // 스크랩 수 계산
             ],
             include: [
@@ -28,54 +28,20 @@ const showAllList = asyncHandler(async (req, res) => {
             group: ['RecruitmentNoticeInfoModel.key'], // 기본 키 컬럼 기준 그룹화
             raw: true
         });
-        res.status(200).json(recruitmentNoticeInfos);
+
+        // stack 필드를 배열로 변환 (추가)
+        const modifiedRecruitmentNoticeInfos = recruitmentNoticeInfos.map(info => ({
+            ...info,
+            stack: info.stack ? info.stack.split(',').map(item => item.trim()) : []
+        }));
+
+        res.status(200).json(modifiedRecruitmentNoticeInfos);
     } catch (error) {
         console.error('Error fetching recruitment notice info:', error);
         res.status(500).send('Internal Server Error');
     }
 });
 
-// // --------------------------------------------------------------------------------------------------------
-// /**
-//  * 정보글 상세 조회 [채용공고]
-//  * GET /api/recruitmentNoticeInfo/:key
-//  */
-// const showDetailInfo = asyncHandler(async (req, res) => {
-//     const { key } = req.params;
-
-//     try {
-//         // 채용 공고 정보와 스크랩 수를 포함하여 조회
-//         const recruitmentNoticeInfo = await RecruitmentNoticeInfo.findOne({
-//             where: { key },
-//             include: [{
-//                 model: Scrap,
-//                 attributes: [] // 실제 데이터는 필요 없으므로 빈 배열
-//             }],
-//             attributes: {
-//                 // 모든 속성과 함께 스크랩 수를 포함
-//                 include: [
-//                     [Sequelize.fn('COUNT', Sequelize.col('Scraps.key')), 'scrapCount']
-//                 ]
-//             },
-//             group: ['RecruitmentNoticeInfoModel.key'] // 기본 키 컬럼 기준 그룹화
-//         });
-//         if (!recruitmentNoticeInfo) {
-//             return res.status(404).json({ message: 'Recruitment Notice Info not found' });
-//         }
-
-//         // companyName을 이용해 Company 모델에서 일치하는 튜플을 찾음
-//         const company = await Company.findOne({
-//             where: { companyName: recruitmentNoticeInfo.companyname }
-//         });
-
-//         // 두 개의 객체를 하나의 객체로 합쳐서 응답
-//         res.status(200).json({ recruitmentNoticeInfo, company });
-//     } catch (error) {
-//         console.error('Error fetching recruitment notice info:', error);
-//         res.status(500).json({ message: 'Internal Server Error' });
-//     }
-// });
-// --------------------------------------------------------------------------------------------------------
 
 /**
  * 정보글 상세 조회 [채용공고]
@@ -105,13 +71,33 @@ const showDetailInfo = asyncHandler(async (req, res) => {
             return res.status(404).json({ message: 'Recruitment Notice Info not found' });
         }
 
+        // recruitmentNoticeInfo에서 stack, qualification, preferences, key_skills을 배열로 변환
+        const recruitmentNotice = {
+            ...recruitmentNoticeInfo.toJSON(),
+            stack: recruitmentNoticeInfo.stack ? recruitmentNoticeInfo.stack.split(',').map(item => item.trim()) : [],
+            qualification: recruitmentNoticeInfo.qualification ? recruitmentNoticeInfo.qualification.split(',').map(item => item.trim()) : [],
+            preferences: recruitmentNoticeInfo.preferences ? recruitmentNoticeInfo.preferences.split(',').map(item => item.trim()) : [],
+            key_skills: recruitmentNoticeInfo.key_skills ? recruitmentNoticeInfo.key_skills.split(',').map(item => item.trim()) : []
+        };
+
         // companyName을 이용해 Company 모델에서 일치하는 튜플을 찾음
         const company = await Company.findOne({
-            where: { companyName: recruitmentNoticeInfo.companyname }
+            where: { companyName: recruitmentNotice.companyname }
         });
 
+        if (!company) {
+            return res.json({ message: 'Company not found' });
+        }
+
+        // company 정보를 수정하여 track과 stack을 배열로 변환
+        const companyInfo = {
+            ...company.toJSON(),
+            track: company.track ? company.track.split(',').map(item => item.trim()) : [],
+            stack: company.stack ? company.stack.split(',').map(item => item.trim()) : []
+        };
+
         // stack 필드를 배열로 변환
-        const stackArray = recruitmentNoticeInfo.stack.split(',').map(item => item.trim());
+        const stackArray = recruitmentNotice.stack;
 
         // 각 stack 항목을 기준으로 다른 채용 공고를 조회
         const relatedNotices = await Promise.all(stackArray.map(async (stackItem) => {
@@ -129,7 +115,7 @@ const showDetailInfo = asyncHandler(async (req, res) => {
 
         // 중복 제거된 공고들을 조회하여 상세 정보를 가져옴
         const detailedNotices = await Promise.all(uniqueNotices.map(async (noticeKey) => {
-            return await RecruitmentNoticeInfo.findOne({
+            const notice = await RecruitmentNoticeInfo.findOne({
                 where: { key: noticeKey },
                 include: [{
                     model: Scrap,
@@ -143,11 +129,51 @@ const showDetailInfo = asyncHandler(async (req, res) => {
                 },
                 group: ['RecruitmentNoticeInfoModel.key']
             });
+            return {
+                ...notice.toJSON(),
+                stack: notice.stack ? notice.stack.split(',').map(item => item.trim()) : [],
+                qualification: notice.qualification ? notice.qualification.split(',').map(item => item.trim()) : [],
+                preferences: notice.preferences ? notice.preferences.split(',').map(item => item.trim()) : [],
+                key_skills: notice.key_skills ? notice.key_skills.split(',').map(item => item.trim()) : []
+            };
         }));
 
+        // 동일한 companyName을 가진 다른 채용 공고 리스트 조회
+        const otherRecruitmentNotices = await RecruitmentNoticeInfo.findAll({
+            where: {
+                companyName: recruitmentNotice.companyname,
+                key: {
+                    [Sequelize.Op.ne]: key // 현재 조회된 공고는 제외
+                }
+            },
+            attributes: [
+                'key', 'title', 'body', 'experience', 'education', 'stack',
+                'work_type', 'companyname', 'startdate', 'enddate', 'pic1', 'recruit_part',
+                [Sequelize.fn('COUNT', Sequelize.col('Scraps.key')), 'scrapCount'] // 스크랩 수 계산
+            ],
+            include: [
+                {
+                    model: Scrap,
+                    attributes: []
+                }
+            ],
+            group: ['RecruitmentNoticeInfoModel.key'],
+            raw: true
+        });
+
+        // console.log('Other Recruitment Notices:', otherRecruitmentNotices); // 디버깅
+
+        // otherRecruitmentNotices의 stack을 배열로 변환
+        const otherNotices = otherRecruitmentNotices.map(notice => ({
+            ...notice,
+            stack: notice.stack ? notice.stack.split(',').map(item => item.trim()) : []
+        }));
+
+        // 네 개의 객체를 하나의 객체로 합쳐서 응답 + 동일회사 다른 글 정보 추가
         res.status(200).json({
-            recruitmentNoticeInfo,
-            company,
+            recruitmentNoticeInfo: recruitmentNotice,
+            company: companyInfo,
+            otherRecruitmentNotices: otherNotices,
             relatedNotices: detailedNotices
         });
     } catch (error) {
@@ -155,6 +181,7 @@ const showDetailInfo = asyncHandler(async (req, res) => {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 });
+
 
 
 /**

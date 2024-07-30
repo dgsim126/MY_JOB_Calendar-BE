@@ -47,7 +47,7 @@ const app = express();
 const port = 8080;
 
 app.use(cors({
-    origin: true, // 모든 도메인 허용
+    origin: 'https://myjobcalendar.duckdns.org', // 해당 도메인만 허용
     credentials: true // 쿠키를 포함한 요청을 허용
 }));
 
@@ -94,9 +94,6 @@ app.use("/api/admin/studyboard", require("./routers/admin/studyboardAdminRoute")
 app.use("/api/studentSupportInfo", require("./routers/ITInfo/StudentSupportInfo/studentSupportInfoRoute"));
 app.use("/api/qualificationInfo", require("./routers/ITInfo/QualificationInfo/qualificationInfoRoute"));
 app.use("/api/recruitmentNoticeInfo", require("./routers/ITInfo/RecruitmentNoticeInfo/recruitmentNoticeInfoRoute"));
-
-// 메인 페이지
-// app.use('/api', require("./routers/Main/mainRoute"));
 
 // 메인 캘린더
 app.use("/api/main", require("./routers/MainCalender/MainCalenderRoute"));

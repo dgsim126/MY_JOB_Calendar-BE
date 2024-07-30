@@ -59,12 +59,23 @@ const showDetailInfo = asyncHandler(async (req, res) => {
         if (!studentSupportInfo) {
             return res.status(404).json({ message: 'Student Support Info not found' });
         }
-        res.status(200).json(studentSupportInfo);
+
+        // studentSupportInfo에서 support_target, application_method, qualification, support_detail을 배열로 변환
+        const modifiedStudentSupportInfo = {
+            ...studentSupportInfo.toJSON(),
+            support_target: studentSupportInfo.support_target ? studentSupportInfo.support_target.split(',').map(item => item.trim()) : [],
+            application_method: studentSupportInfo.application_method ? studentSupportInfo.application_method.split(',').map(item => item.trim()) : [],
+            qualification: studentSupportInfo.qualification ? studentSupportInfo.qualification.split(',').map(item => item.trim()) : [],
+            support_detail: studentSupportInfo.support_detail ? studentSupportInfo.support_detail.split(',').map(item => item.trim()) : []
+        };
+
+        res.status(200).json(modifiedStudentSupportInfo);
     } catch (error) {
         console.error('Error fetching student support info:', error);
         res.status(500).send('Internal Server Error');
     }
 });
+
 
 // POST /api/studentSupportInfo/:studentSupportInfoKey/scrap
 // 관심 학생지원 스크랩
@@ -104,6 +115,7 @@ const deleteStudentSupportScrap = asyncHandler(async (req, res) => {
             userID
         }
     });
+    console.log(scrap);
 
     if (!scrap) {
         return res.status(404).send('Scrap not found');
