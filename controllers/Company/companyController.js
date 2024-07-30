@@ -81,7 +81,12 @@ const otherCompanies = await Company.findAll({
     'logo',
     'track',
     'stack',
-    [sequelize.fn('COUNT', sequelize.col('Scraps.companyID')), 'scrapCount']
+    [sequelize.fn('COUNT', sequelize.col('Scraps.companyID')), 'scrapCount'],
+    [sequelize.literal(`(
+      SELECT COUNT(*)
+      FROM recruitmentNoticeInfo
+      WHERE recruitmentNoticeInfo.companyname = Company.companyName
+    )`), 'recruitmentNoticeCount'] // 채용공고에서는 companyname임에 주의.
   ],
   include: [{
     model: Scrap,
