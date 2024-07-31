@@ -72,7 +72,7 @@ app.use(express.json({ limit: '10mb' })); // !!!!!!! 수정 !!!!! 요청 본문 
 app.use(express.urlencoded({ extended: true, limit: '10mb' })); // !!!!!!! 수정 !!!!! URL-encoded 데이터 크기 제한 설정 (10MB)
 app.use(cookieParser()); // 쿠키 파서 미들웨어 추가
 
-// 회원가입, 로그인, 로그아웃, 프로필
+// 회원가입, 로그인, 로그아웃, 프로필, 현재 로그인중인 사용자의 이름만 반환
 app.use('/api/register', require('./routers/User/registerRoute'));
 app.use('/api', require('./routers/User/loginRoute'));
 app.use('/api/profile', require('./routers/User/profileRoute'));
