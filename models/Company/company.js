@@ -70,7 +70,7 @@ class Company extends Sequelize.Model {
                 allowNull: true
             },
             link: {
-                type: DataTypes.STRING,
+                type: DataTypes.STRING(500), // 길이가 너무 길으므로 확장.
                 allowNull: true
             },
             revenue: {

@@ -59,7 +59,7 @@ class QualificationInfoModel extends Sequelize.Model {
                 allowNull: true
             },
             body: {
-                type: DataTypes.STRING,
+                type: DataTypes.STRING(500), // 길이가 너무 길으므로 확장.
                 allowNull: false
             },
             pass_standard: {
@@ -95,7 +95,7 @@ class QualificationInfoModel extends Sequelize.Model {
                 allowNull: true
             },
             link: {
-                type: DataTypes.STRING,
+                type: DataTypes.STRING(500), // 길이가 너무 길으므로 확장.
                 allowNull: true
             },
             fee: {
