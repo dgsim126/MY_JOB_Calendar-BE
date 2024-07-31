@@ -27,7 +27,7 @@ router.get('/callback', async (req, res) => {
     console.log('Access Token:', tokens.access_token);
     console.log('Refresh Token:', tokens.refresh_token);
 
-    res.send('Authentication successful! You can close this tab.');
+    res.redirect('https://mjcback.duckdns.org/api/my/google');
   } catch (error) {
     console.error('Error while exchanging token', error);
     res.status(500).send('Authentication failed.');
