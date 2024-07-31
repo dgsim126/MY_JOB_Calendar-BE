@@ -113,6 +113,8 @@ const showDetailInfo = asyncHandler(async (req, res) => {
             stack: company.stack ? company.stack.split(',').map(item => item.trim()) : []
         };
 
+        // ====================================================================================================
+
         // stack 필드를 배열로 변환
         const stackArray = recruitmentNotice.stack;
 
@@ -122,6 +124,9 @@ const showDetailInfo = asyncHandler(async (req, res) => {
                 where: {
                     stack: {
                         [Op.like]: `%${stackItem}%`
+                    },
+                    key: {
+                        [Op.ne]: key // 현재 공고의 key와 다른지 확인
                     }
                 }
             });
@@ -154,6 +159,8 @@ const showDetailInfo = asyncHandler(async (req, res) => {
                 key_skills: notice.key_skills ? notice.key_skills.split(',').map(item => item.trim()) : []
             };
         }));
+
+        // ====================================================================================================
 
         // 동일한 companyName을 가진 다른 채용 공고 리스트 조회
         const otherRecruitmentNotices = await RecruitmentNoticeInfo.findAll({
