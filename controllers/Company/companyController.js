@@ -3,6 +3,7 @@ const { sequelize } = require('../../config/db');
 const Company = require('../../models/Company/company');
 const Scrap = require('../../models/Scrap/scrap');
 
+
 const RecruitmentNoticeInfo = require('../../models/ITInfo/RecruitmentNoticeInfo/recruitmentNoticeInfoModel');
 const { Sequelize } = require('sequelize');
 
@@ -64,6 +65,7 @@ const getCompanyById = asyncHandler(async (req, res) => {
     // track과 stack 필드를 배열로 변환
     const tracks = company.track ? company.track.split(',') : [];
     const stacks = company.stack ? company.stack.split(',') : [];
+
 
 
 // 🌟[로직추가] - 동일한 track을 가진 다른 회사 리스트 조회
