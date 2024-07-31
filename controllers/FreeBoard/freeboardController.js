@@ -82,6 +82,7 @@ const showDetail = asyncHandler(async (req, res) => {
 const createPost = asyncHandler(async (req, res) => {
     const { title, body, pic1, pic2 } = req.body;
     const id = req.user.email;
+    console.log(req);
 
     try {
         // Base64 문자열을 바이너리 데이터로 변환
