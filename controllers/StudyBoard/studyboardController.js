@@ -24,26 +24,13 @@ const binaryToBase64 = (binaryData) => {
 };
 
 /**
- * 모든 게시글 가져오기 (댓글 수 포함)
+ * 모든 게시글 가져오기
  * GET /api/studyboard
  */
 const showAll = asyncHandler(async (req, res) => {
     try {
-        // 모든 게시글을 가져오면서 댓글 수를 계산하여 포함
-        const data = await StudyBoard.findAll({
-            attributes: {
-                include: [
-                    [sequelize.fn('COUNT', sequelize.col('StudyboardComments.commentKey')), 'commentCount']
-                ]
-            },
-            include: [
-                {
-                    model: StudyBoardComment,
-                    attributes: [] // 댓글의 세부정보를 포함하지 않음
-                }
-            ],
-            group: ['StudyBoard.key'] // group by 게시글의 key
-        });
+        // 모든 게시글을 가져옴
+        const data = await StudyBoard.findAll();
 
         res.status(200).json(data);
     } catch (error) {
@@ -51,6 +38,7 @@ const showAll = asyncHandler(async (req, res) => {
         res.status(500).json({ message: "서버 오류가 발생했습니다." });
     }
 });
+
 
 
 /**
