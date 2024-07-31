@@ -64,6 +64,21 @@ const getProfile = asyncHandler(async (req, res) => {
     }
 });
 
+// GET /api/profile/name
+const getUserName = asyncHandler(async (req, res) => {
+    try {
+        const id = req.user.userID;
+        const user = await User.findByPk(id);
+        if (user) {
+            res.status(200).json({ name: user.name });
+        } else {
+            res.status(404).json({ error: 'User not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ error: 'server error' });
+    }
+});
+
 // PUT /api/profile/edit
 const updateProfile = asyncHandler(async (req, res) => {
     try {
@@ -109,4 +124,4 @@ const deleteProfile = asyncHandler(async (req, res) => {
     }
 });
 
-module.exports = { getProfile, updateProfile, deleteProfile };
+module.exports = { getProfile, updateProfile, deleteProfile, getUserName };
