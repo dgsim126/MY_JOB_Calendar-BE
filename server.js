@@ -47,13 +47,14 @@ const app = express();
 const port = 8080;
 
 app.use(cors({
+    // origin: true, // 로컬 테스트용
     origin: 'https://myjobcalendar.duckdns.org', // 해당 도메인만 허용
     credentials: true // 쿠키를 포함한 요청을 허용
 }));
 
 // 데이터베이스 연결
 sequelize
-.sync({ force: true }) // 현재 모델 상태 반영(배포 시 false로 변환) // true 시 값 날라감
+.sync({ force: false }) // 현재 모델 상태 반영(배포 시 false로 변환) // true 시 값 날라감
 .then(() => {
     console.log('데이터베이스 연결 성공');
 })
