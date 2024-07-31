@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const {verifyToken} = require('../../../middleware/token');
+const { verifyToken } = require('../../../middleware/token');
+const { optionalVerifyToken } = require('../../../middleware/token');
 const asyncHandler = require("express-async-handler");
 const {
     showAllList,
@@ -16,7 +17,7 @@ const {
 router.get('/', showAllList);
 
 // 정보글 상세 조회 [자격증] - GET /api/qualificationInfo/:key
-router.get('/:key', showDetailInfo);
+router.get('/:key', optionalVerifyToken, showDetailInfo);
 
 // 관심 자격증 스크랩 - POST /api/qualificationInfo/:qualificationInfoKey/scrap
 router.post('/:qualificationInfoKey/scrap', verifyToken, scrapQualificationInfo);
