@@ -1,7 +1,8 @@
 // StudentSupportInfo 라우트코드
 const express = require('express');
 const router = express.Router();
-const {verifyToken} = require('../../../middleware/token');
+const { verifyToken } = require('../../../middleware/token');
+const { optionalVerifyToken } = require('../../../middleware/token');
 const asyncHandler = require("express-async-handler");
 const {
     showAllList,
@@ -17,7 +18,7 @@ const {
 router.get('/', showAllList);
 
 // 정보글 상세 조회 [학생지원] - GET /api/studentSupportInfo/:key
-router.get('/:key', showDetailInfo);
+router.get('/:key', optionalVerifyToken, showDetailInfo);
 
 // 관심 학생지원 스크랩 - POST /api/studentSupportInfo/:studentSupportInfoKey/scrap
 router.post('/:studentSupportInfoKey/scrap', verifyToken, scrapStudentSupportInfo);

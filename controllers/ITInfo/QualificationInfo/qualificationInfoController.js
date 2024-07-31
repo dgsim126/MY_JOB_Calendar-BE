@@ -39,7 +39,9 @@ const showAllList = asyncHandler(async (req, res) => {
  */
 const showDetailInfo = asyncHandler(async (req, res) => {
     const { key } = req.params;
-    
+    const user = req.user;
+    const userID = user ? user.userID : null;
+
     try {
         const qualificationInfo = await QualificationInfo.findOne({
             where: { key },
@@ -68,6 +70,22 @@ const showDetailInfo = asyncHandler(async (req, res) => {
             testinfo: qualificationInfo.testinfo ? qualificationInfo.testinfo.split(',').map(item => item.trim()) : [],
             problems: qualificationInfo.problems ? qualificationInfo.problems.split(',').map(item => item.trim()) : []
         };
+
+
+        // 🌟 사용자가 이 정보를 스크랩했는지 여부 체크
+        let isScrapped = false;
+        if (userID) {
+            const scrap = await Scrap.findOne({
+                where: {
+                    userID: userID,
+                    qualificationInfoKey: qualificationInfo.key
+                }
+            });
+            isScrapped = !!scrap;
+        }
+
+        modifiedQualificationInfo.isScrapped = !!isScrapped;
+
 
         res.status(200).json(modifiedQualificationInfo);
     } catch (error) {
