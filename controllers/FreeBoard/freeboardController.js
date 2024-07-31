@@ -7,19 +7,27 @@ const { Op } = require('sequelize');
 /**
  * Base64 문자열을 바이너리 데이터로 변환
  * @param {string} base64String - Base64로 인코딩된 문자열
- * @returns {Buffer} - 변환된 바이너리 데이터
+ * @returns {object} - 변환된 바이너리 데이터와 prefix
  */
 const base64ToBinary = (base64String) => {
-    return Buffer.from(base64String, 'base64');
+    const firstCommaIndex = base64String.indexOf(',');
+    const base64Prefix = base64String.substring(0, firstCommaIndex + 1);
+    const resultString = base64String.substring(firstCommaIndex + 1);
+    return {
+        binaryData: Buffer.from(resultString, 'base64'),
+        prefix: base64Prefix
+    };
 };
 
 /**
  * 바이너리 데이터를 Base64 문자열로 변환
  * @param {Buffer} binaryData - 바이너리 데이터
+ * @param {string} prefix - Base64 prefix
  * @returns {string} - Base64 문자열
  */
-const binaryToBase64 = (binaryData) => {
-    return binaryData.toString('base64');
+const binaryToBase64 = (binaryData, prefix) => {
+    const base64String = binaryData.toString('base64');
+    return prefix + base64String;
 };
 
 /**
@@ -40,7 +48,6 @@ const showAll = asyncHandler(async (req, res) => {
     }
 });
 
-
 /**
  * 게시글 상세 조회
  * GET /api/freeboard/:key
@@ -55,8 +62,8 @@ const showDetail = asyncHandler(async (req, res) => {
         }
         
         // 바이너리 데이터를 Base64 문자열로 변환
-        if (data.pic1) data.pic1 = binaryToBase64(data.pic1);
-        if (data.pic2) data.pic2 = binaryToBase64(data.pic2);
+        if (data.pic1) data.pic1 = binaryToBase64(data.pic1, 'data:image/jpeg;base64,');
+        if (data.pic2) data.pic2 = binaryToBase64(data.pic2, 'data:image/jpeg;base64,');
 
         res.status(200).json(data);
     } catch (error) {
@@ -72,19 +79,18 @@ const showDetail = asyncHandler(async (req, res) => {
 const createPost = asyncHandler(async (req, res) => {
     const { title, body, pic1, pic2 } = req.body;
     const id = req.user.email;
-    console.log(req);
 
     try {
         // Base64 문자열을 바이너리 데이터로 변환
-        const pic1Binary = pic1 ? base64ToBinary(pic1) : null;
-        const pic2Binary = pic2 ? base64ToBinary(pic2) : null;
+        const pic1Data = pic1 ? base64ToBinary(pic1) : null;
+        const pic2Data = pic2 ? base64ToBinary(pic2) : null;
 
         const newData = await FreeBoard.create({
             id,
             title,
             body,
-            pic1: pic1Binary,
-            pic2: pic2Binary
+            pic1: pic1Data ? pic1Data.binaryData : null,
+            pic2: pic2Data ? pic2Data.binaryData : null
         });
         res.status(201).json(newData);
     } catch (error) {
@@ -115,15 +121,15 @@ const updatePost = asyncHandler(async (req, res) => {
         }
 
         // Base64 문자열을 바이너리 데이터로 변환
-        const pic1Binary = pic1 ? base64ToBinary(pic1) : post.pic1;
-        const pic2Binary = pic2 ? base64ToBinary(pic2) : post.pic2;
+        const pic1Data = pic1 ? base64ToBinary(pic1) : null;
+        const pic2Data = pic2 ? base64ToBinary(pic2) : null;
 
         // 게시글 수정
         await FreeBoard.update({
             title,
             body,
-            pic1: pic1Binary,
-            pic2: pic2Binary
+            pic1: pic1Data ? pic1Data.binaryData : post.pic1,
+            pic2: pic2Data ? pic2Data.binaryData : post.pic2
         }, {
             where: { key }
         });
@@ -132,8 +138,8 @@ const updatePost = asyncHandler(async (req, res) => {
         const afterUpdated = await FreeBoard.findByPk(key);
 
         // 바이너리 데이터를 Base64 문자열로 변환
-        if (afterUpdated.pic1) afterUpdated.pic1 = binaryToBase64(afterUpdated.pic1);
-        if (afterUpdated.pic2) afterUpdated.pic2 = binaryToBase64(afterUpdated.pic2);
+        if (afterUpdated.pic1) afterUpdated.pic1 = binaryToBase64(afterUpdated.pic1, 'data:image/jpeg;base64,');
+        if (afterUpdated.pic2) afterUpdated.pic2 = binaryToBase64(afterUpdated.pic2, 'data:image/jpeg;base64,');
 
         res.status(200).json(afterUpdated);
     } catch (error) {
@@ -210,8 +216,5 @@ const searchByTitle = asyncHandler(async (req, res) => {
         res.status(500).json({ message: "서버 오류가 발생했습니다." });
     }
 });
-
-
-
 
 module.exports = { showAll, showDetail, createPost, updatePost, deletePost, searchByTitle };
