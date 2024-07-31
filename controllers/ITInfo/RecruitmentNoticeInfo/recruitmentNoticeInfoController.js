@@ -49,7 +49,9 @@ const showAllList = asyncHandler(async (req, res) => {
  */
 const showDetailInfo = asyncHandler(async (req, res) => {
     const { key } = req.params;
-
+    const user = req.user;
+    const userID = user ? user.userID : null;
+    
     try {
         // 채용 공고 정보와 스크랩 수를 포함하여 조회
         const recruitmentNoticeInfo = await RecruitmentNoticeInfo.findOne({
@@ -80,6 +82,21 @@ const showDetailInfo = asyncHandler(async (req, res) => {
             key_skills: recruitmentNoticeInfo.key_skills ? recruitmentNoticeInfo.key_skills.split(',').map(item => item.trim()) : []
         };
 
+
+        // 🌟 사용자가 이 정보를 스크랩했는지 여부 체크
+        let isScrapped = false;
+        if (userID) {
+            const scrap = await Scrap.findOne({
+                where: {
+                    userID: userID,
+                    recruitmentNoticeInfoKey: recruitmentNoticeInfo.key
+                }
+            });
+            isScrapped = !!scrap;
+        }
+
+        recruitmentNotice.isScrapped = !!isScrapped;
+
         // companyName을 이용해 Company 모델에서 일치하는 튜플을 찾음
         const company = await Company.findOne({
             where: { companyName: recruitmentNotice.companyname }
@@ -96,6 +113,8 @@ const showDetailInfo = asyncHandler(async (req, res) => {
             stack: company.stack ? company.stack.split(',').map(item => item.trim()) : []
         };
 
+        // ====================================================================================================
+
         // stack 필드를 배열로 변환
         const stackArray = recruitmentNotice.stack;
 
@@ -105,6 +124,9 @@ const showDetailInfo = asyncHandler(async (req, res) => {
                 where: {
                     stack: {
                         [Op.like]: `%${stackItem}%`
+                    },
+                    key: {
+                        [Op.ne]: key // 현재 공고의 key와 다른지 확인
                     }
                 }
             });
@@ -137,6 +159,8 @@ const showDetailInfo = asyncHandler(async (req, res) => {
                 key_skills: notice.key_skills ? notice.key_skills.split(',').map(item => item.trim()) : []
             };
         }));
+
+        // ====================================================================================================
 
         // 동일한 companyName을 가진 다른 채용 공고 리스트 조회
         const otherRecruitmentNotices = await RecruitmentNoticeInfo.findAll({

@@ -47,7 +47,7 @@ class RecruitmentNoticeInfoModel extends Sequelize.Model {
                 allowNull: true
             },
             body: {
-                type: DataTypes.STRING,
+                type: DataTypes.STRING(500), // 길이가 너무 길으므로 확장.
                 allowNull: false
             },
             experience: {
@@ -63,11 +63,11 @@ class RecruitmentNoticeInfoModel extends Sequelize.Model {
                 allowNull: true
             },
             qualification: {
-                type: DataTypes.STRING,
+                type: DataTypes.STRING(500), // 길이가 너무 길으므로 확장.
                 allowNull: true
             },
             preferences: {
-                type: DataTypes.STRING,
+                type: DataTypes.STRING(500), // 길이가 너무 길으므로 확장.
                 allowNull: true
             },
             work_type: {
@@ -103,7 +103,7 @@ class RecruitmentNoticeInfoModel extends Sequelize.Model {
                 allowNull: true
             },
             link: {
-                type: DataTypes.STRING,
+                type: DataTypes.STRING(500), // 길이가 너무 길으므로 확장.
                 allowNull: true
             },
             companyname: {
