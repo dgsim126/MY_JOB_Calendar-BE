@@ -47,8 +47,7 @@ const app = express();
 const port = 8080;
 
 app.use(cors({
-    //origin: 'https://myjobcalendar.duckdns.org', // 해당 도메인만 허용
-    origin: true,
+    origin: 'https://myjobcalendar.duckdns.org', // 해당 도메인만 허용
     credentials: true // 쿠키를 포함한 요청을 허용
 }));
 
