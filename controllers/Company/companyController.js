@@ -108,6 +108,37 @@ const otherCompanies = await Company.findAll({
 });
 
 
+
+// 🌟[로직추가] - 동일한 track을 가진 다른 회사 리스트 조회
+const otherCompanies = await Company.findAll({
+  where: {
+    track: company.track,
+    companyID: {
+      [Sequelize.Op.ne]: companyID // 현재 조회된 회사를 제외시킨다.
+    }
+  },
+  attributes: [
+    'companyID',
+    'companyName',
+    'establish',
+    'logo',
+    'track',
+    'stack',
+    [sequelize.fn('COUNT', sequelize.col('Scraps.companyID')), 'scrapCount'],
+    [sequelize.literal(`(
+      SELECT COUNT(*)
+      FROM recruitmentNoticeInfo
+      WHERE recruitmentNoticeInfo.companyname = Company.companyName
+    )`), 'recruitmentNoticeCount'] // 채용공고에서는 companyname임에 주의.
+  ],
+  include: [{
+    model: Scrap,
+    attributes: []
+  }],
+  group: ['Company.companyID']
+});
+
+
     // JSON 응답에 track과 stack 배열 포함
     const companyData = {
       ...company.toJSON(),

@@ -21,8 +21,8 @@
     "googleapis": "^140.0.1",
     "jsonwebtoken": "^9.0.2",
     "mariadb": "^3.3.1",
-    "open": "^10.1.0",
     "nodemon": "^3.1.4",
+    "open": "^10.1.0",
     "sequelize": "^6.37.3",
     "sequelize-cli": "^6.6.2"
   }
