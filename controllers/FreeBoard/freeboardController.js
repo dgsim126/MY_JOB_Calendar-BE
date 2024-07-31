@@ -28,6 +28,7 @@ const binaryToBase64 = (binaryData) => {
  */
 const showAll = asyncHandler(async (req, res) => {
     try {
+        console.log('SHOWALL에는 들어옴'); // 로그 추가
         // 모든 게시글을 가져오면서 댓글 수를 계산하여 포함
         const data = await FreeBoard.findAll({
             attributes: {
@@ -38,12 +39,14 @@ const showAll = asyncHandler(async (req, res) => {
             include: [
                 {
                     model: FreeBoardComment,
+                    as: 'FreeboardComments', // alias 수정
                     attributes: [] // 댓글의 세부정보를 포함하지 않음
                 }
             ],
             group: ['FreeBoard.key'] // group by 게시글의 key
         });
 
+        console.log('다음과 같은 값 받음:', data); // 로그 추가
         res.status(200).json(data);
     } catch (error) {
         console.error(error);

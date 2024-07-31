@@ -47,6 +47,7 @@ class Freeboard extends Sequelize.Model {
     static associate(models) {
         this.hasMany(models.FreeboardComment, {
             foreignKey: 'freeboardkey',
+            as: 'FreeboardComments', // alias 추가
             onDelete: 'CASCADE'
         });
     }
