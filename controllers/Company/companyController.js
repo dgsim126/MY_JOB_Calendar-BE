@@ -3,6 +3,7 @@ const { sequelize } = require('../../config/db');
 const Company = require('../../models/Company/company');
 const Scrap = require('../../models/Scrap/scrap');
 
+
 const RecruitmentNoticeInfo = require('../../models/ITInfo/RecruitmentNoticeInfo/recruitmentNoticeInfoModel');
 const { Sequelize } = require('sequelize');
 
@@ -66,6 +67,7 @@ const getCompanyById = asyncHandler(async (req, res) => {
     const stacks = company.stack ? company.stack.split(',') : [];
 
 
+
 // 🌟[로직추가] - 동일한 track을 가진 다른 회사 리스트 조회
 const otherCompanies = await Company.findAll({
   where: {
@@ -81,7 +83,12 @@ const otherCompanies = await Company.findAll({
     'logo',
     'track',
     'stack',
-    [sequelize.fn('COUNT', sequelize.col('Scraps.companyID')), 'scrapCount']
+    [sequelize.fn('COUNT', sequelize.col('Scraps.companyID')), 'scrapCount'],
+    [sequelize.literal(`(
+      SELECT COUNT(*)
+      FROM recruitmentNoticeInfo
+      WHERE recruitmentNoticeInfo.companyname = Company.companyName
+    )`), 'recruitmentNoticeCount'] // 채용공고에서는 companyname임에 주의.
   ],
   include: [{
     model: Scrap,

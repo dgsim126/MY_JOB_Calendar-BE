@@ -23,33 +23,23 @@ const binaryToBase64 = (binaryData) => {
 };
 
 /**
- * 모든 게시글 가져오기 (댓글 수 포함)
+ * 모든 게시글 가져오기
  * GET /api/freeboard
  */
 const showAll = asyncHandler(async (req, res) => {
     try {
-        // 모든 게시글을 가져오면서 댓글 수를 계산하여 포함
-        const data = await FreeBoard.findAll({
-            attributes: {
-                include: [
-                    [sequelize.fn('COUNT', sequelize.col('FreeBoardComments.commentKey')), 'commentCount']
-                ]
-            },
-            include: [
-                {
-                    model: FreeBoardComment,
-                    attributes: [] // 댓글의 세부정보를 포함하지 않음
-                }
-            ],
-            group: ['FreeBoard.key'] // group by 게시글의 key
-        });
+        console.log('SHOWALL에는 들어옴'); // 로그 추가
+        // 모든 게시글을 가져옴
+        const data = await FreeBoard.findAll();
 
+        console.log('다음과 같은 값 받음:', data); // 로그 추가
         res.status(200).json(data);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "서버 오류가 발생했습니다." });
     }
 });
+
 
 /**
  * 게시글 상세 조회
@@ -82,6 +72,7 @@ const showDetail = asyncHandler(async (req, res) => {
 const createPost = asyncHandler(async (req, res) => {
     const { title, body, pic1, pic2 } = req.body;
     const id = req.user.email;
+    console.log(req);
 
     try {
         // Base64 문자열을 바이너리 데이터로 변환
