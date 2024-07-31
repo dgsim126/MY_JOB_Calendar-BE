@@ -3,9 +3,6 @@ const { sequelize } = require('../../config/db');
 const Company = require('../../models/Company/company');
 const Scrap = require('../../models/Scrap/scrap');
 
-const RecruitmentNoticeInfo = require('../../models/ITInfo/RecruitmentNoticeInfo/recruitmentNoticeInfoModel');
-const { Sequelize } = require('sequelize');
-
 
 const RecruitmentNoticeInfo = require('../../models/ITInfo/RecruitmentNoticeInfo/recruitmentNoticeInfoModel');
 const { Sequelize } = require('sequelize');
@@ -21,14 +18,6 @@ const getCompanies = asyncHandler(async (req, res) => {
         'companyName',
         'establish',
         'logo',
-        'track',
-        'stack',
-        [sequelize.fn('COUNT', sequelize.col('Scraps.companyID')), 'scrapCount'],
-        [sequelize.literal(`(
-          SELECT COUNT(*)
-          FROM recruitmentNoticeInfo
-          WHERE recruitmentNoticeInfo.companyname = Company.companyName
-        )`), 'recruitmentNoticeCount'] // 채용공고에서는 companyname임에 주의.
         'track',
         'stack',
         [sequelize.fn('COUNT', sequelize.col('Scraps.companyID')), 'scrapCount'],
@@ -78,36 +67,6 @@ const getCompanyById = asyncHandler(async (req, res) => {
     const stacks = company.stack ? company.stack.split(',') : [];
 
 
-// 🌟[로직추가] - 동일한 track을 가진 다른 회사 리스트 조회
-const otherCompanies = await Company.findAll({
-  where: {
-    track: company.track,
-    companyID: {
-      [Sequelize.Op.ne]: companyID // 현재 조회된 회사를 제외시킨다.
-    }
-  },
-  attributes: [
-    'companyID',
-    'companyName',
-    'establish',
-    'logo',
-    'track',
-    'stack',
-    [sequelize.fn('COUNT', sequelize.col('Scraps.companyID')), 'scrapCount'],
-    [sequelize.literal(`(
-      SELECT COUNT(*)
-      FROM recruitmentNoticeInfo
-      WHERE recruitmentNoticeInfo.companyname = Company.companyName
-    )`), 'recruitmentNoticeCount'] // 채용공고에서는 companyname임에 주의.
-  ],
-  include: [{
-    model: Scrap,
-    attributes: []
-  }],
-  group: ['Company.companyID']
-});
-
-
 
 // 🌟[로직추가] - 동일한 track을 가진 다른 회사 리스트 조회
 const otherCompanies = await Company.findAll({
@@ -143,8 +102,6 @@ const otherCompanies = await Company.findAll({
     const companyData = {
       ...company.toJSON(),
       track: tracks,
-      stack: stacks,
-      otherCompanies // 다른 비슷한 회사정보 추가.
       stack: stacks,
       otherCompanies // 다른 비슷한 회사정보 추가.
     };
