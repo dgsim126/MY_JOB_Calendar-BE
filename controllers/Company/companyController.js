@@ -7,6 +7,10 @@ const RecruitmentNoticeInfo = require('../../models/ITInfo/RecruitmentNoticeInfo
 const { Sequelize } = require('sequelize');
 
 
+const RecruitmentNoticeInfo = require('../../models/ITInfo/RecruitmentNoticeInfo/recruitmentNoticeInfoModel');
+const { Sequelize } = require('sequelize');
+
+
 // GET api/company
 // 모든 회사의 특정 정보 (스크랩 인수 포함)
 const getCompanies = asyncHandler(async (req, res) => {
@@ -17,6 +21,14 @@ const getCompanies = asyncHandler(async (req, res) => {
         'companyName',
         'establish',
         'logo',
+        'track',
+        'stack',
+        [sequelize.fn('COUNT', sequelize.col('Scraps.companyID')), 'scrapCount'],
+        [sequelize.literal(`(
+          SELECT COUNT(*)
+          FROM recruitmentNoticeInfo
+          WHERE recruitmentNoticeInfo.companyname = Company.companyName
+        )`), 'recruitmentNoticeCount'] // 채용공고에서는 companyname임에 주의.
         'track',
         'stack',
         [sequelize.fn('COUNT', sequelize.col('Scraps.companyID')), 'scrapCount'],
@@ -100,6 +112,8 @@ const otherCompanies = await Company.findAll({
     const companyData = {
       ...company.toJSON(),
       track: tracks,
+      stack: stacks,
+      otherCompanies // 다른 비슷한 회사정보 추가.
       stack: stacks,
       otherCompanies // 다른 비슷한 회사정보 추가.
     };
