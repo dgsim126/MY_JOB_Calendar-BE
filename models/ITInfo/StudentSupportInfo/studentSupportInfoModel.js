@@ -27,27 +27,27 @@ class StudentSupportInfoModel extends Sequelize.Model {
                 allowNull: true
             },
             logo: {
-                type: DataTypes.STRING,
+                type: DataTypes.STRING(500),
                 allowNull: true
             },
             pic1: {
-                type: DataTypes.STRING,
+                type: DataTypes.STRING(500),
                 allowNull: true
             },
             pic2: {
-                type: DataTypes.STRING,
+                type: DataTypes.STRING(500),
                 allowNull: true
             },
             pic3: {
-                type: DataTypes.STRING,
+                type: DataTypes.STRING(500),
                 allowNull: true
             },
             pic4: {
-                type: DataTypes.STRING,
+                type: DataTypes.STRING(500),
                 allowNull: true
             },
             pic5: {
-                type: DataTypes.STRING,
+                type: DataTypes.STRING(500),
                 allowNull: true
             },
             body: {
