@@ -46,7 +46,7 @@ const studentSupports = [
       "enddate": "2024-08-31T23:59:59.000Z",
       "resultdate": "2024-12-13T00:00:00.000Z",
       "logo": "ssea_logo.png",
-      "pic1": "https://cafeptthumb-phinf.pstatic.net/MjAyNDA0MDhfMTc3/MDAxNzEyNTUzMDA3NDA3.qrec2AQH9LaWj2g0GGBn4JhBYwRX2saRfuRZ4YmCMwMg.uDME9K176bNYw9tzU5BFr4isJdQMVbBOZe1B8leW24gg.PNG/%ED%8F%AC%EC%8A%A4%ED%84%B0.png?type=w1600",
+      "pic1": "http://www.ikcia.or.kr/data/editor/2404/20240425114435_ee7bab669a07a3b8f639d5ca6325e9d3_481s.png",
       "pic2": "",
       "pic3": "",
       "pic4": "",
