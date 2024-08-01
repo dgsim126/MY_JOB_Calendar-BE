@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 const { sequelize } = require("../../config/db");
 const Company = require("../../models/Company/company");
 const Scrap = require("../../models/Scrap/scrap");
+const { Op } = require('sequelize');
 
 const RecruitmentNoticeInfo = require("../../models/ITInfo/RecruitmentNoticeInfo/recruitmentNoticeInfoModel");
 const { Sequelize } = require("sequelize");
