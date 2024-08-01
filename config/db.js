@@ -9,7 +9,8 @@ const sequelize = new Sequelize(
   {
     host: process.env.DB_HOST,
     dialect: 'mariadb', // MariaDB 사용
-    logging: false // 쿼리 로깅 비활성화
+    logging: false, // 쿼리 로깅 비활성화
+    //timezone: '+09:00' // 한국 시간대 설정
   }
   );
 
