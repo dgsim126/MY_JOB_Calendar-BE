@@ -36,12 +36,16 @@ const binaryToBase64 = (binaryData, prefix) => {
  */
 const showAll = asyncHandler(async (req, res) => {
     try {
-        console.log('SHOWALL에는 들어옴'); // 로그 추가
-        // 모든 게시글을 가져옴
         const data = await FreeBoard.findAll();
 
-        console.log('다음과 같은 값 받음:', data); // 로그 추가
-        res.status(200).json(data);
+        // pic1, pic2 속성을 Base64 문자열로 변환
+        const convertedData = data.map(post => {
+            if (post.pic1) post.pic1 = binaryToBase64(post.pic1, 'data:image/jpeg;base64,');
+            if (post.pic2) post.pic2 = binaryToBase64(post.pic2, 'data:image/jpeg;base64,');
+            return post;
+        });
+
+        res.status(200).json(convertedData);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "서버 오류가 발생했습니다." });

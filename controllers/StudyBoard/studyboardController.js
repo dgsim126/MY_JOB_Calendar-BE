@@ -1,26 +1,33 @@
 const asyncHandler = require("express-async-handler");
 const StudyBoard= require("../../models/StudyBoard/studyboard");
 const StudyBoardComment = require("../../models/StudyBoard/studyboardComment"); // 댓글 모델 추가
-const { Op } = require('sequelize');
 const { sequelize } = require('../../config/db'); // Sequelize 인스턴스 가져오기
-// const bcrypt = require("bcrypt");
+const { Op } = require('sequelize');
 
 /**
  * Base64 문자열을 바이너리 데이터로 변환
  * @param {string} base64String - Base64로 인코딩된 문자열
- * @returns {Buffer} - 변환된 바이너리 데이터
+ * @returns {object} - 변환된 바이너리 데이터와 prefix
  */
 const base64ToBinary = (base64String) => {
-    return Buffer.from(base64String, 'base64');
+    const firstCommaIndex = base64String.indexOf(',');
+    const base64Prefix = base64String.substring(0, firstCommaIndex + 1);
+    const resultString = base64String.substring(firstCommaIndex + 1);
+    return {
+        binaryData: Buffer.from(resultString, 'base64'),
+        prefix: base64Prefix
+    };
 };
 
 /**
  * 바이너리 데이터를 Base64 문자열로 변환
  * @param {Buffer} binaryData - 바이너리 데이터
+ * @param {string} prefix - Base64 prefix
  * @returns {string} - Base64 문자열
  */
-const binaryToBase64 = (binaryData) => {
-    return binaryData.toString('base64');
+const binaryToBase64 = (binaryData, prefix) => {
+    const base64String = binaryData.toString('base64');
+    return prefix + base64String;
 };
 
 /**
@@ -32,7 +39,14 @@ const showAll = asyncHandler(async (req, res) => {
         // 모든 게시글을 가져옴
         const data = await StudyBoard.findAll();
 
-        res.status(200).json(data);
+        // pic1, pic2 속성을 Base64 문자열로 변환
+        const convertedData = data.map(post => {
+            if (post.pic1) post.pic1 = binaryToBase64(post.pic1, 'data:image/jpeg;base64,');
+            if (post.pic2) post.pic2 = binaryToBase64(post.pic2, 'data:image/jpeg;base64,');
+            return post;
+        });
+
+        res.status(200).json(convertedData);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "서버 오류가 발생했습니다." });
@@ -50,13 +64,14 @@ const showDetail = asyncHandler(async (req, res) => {
     try{
         const data= await StudyBoard.findByPk(key);
         if(!data){
-            res.status(404);
+            res.status(404).json({ message: "게시글을 찾을 수 없음." });
             return;
         }
          
         // 바이너리 데이터를 Base64 문자열로 변환
-        if (data.pic1) data.pic1 = binaryToBase64(data.pic1);
-        if (data.pic2) data.pic2 = binaryToBase64(data.pic2);
+        if (data.pic1) data.pic1 = binaryToBase64(data.pic1, 'data:image/jpeg;base64,');
+        if (data.pic2) data.pic2 = binaryToBase64(data.pic2, 'data:image/jpeg;base64,');
+
         
         res.status(200).json(data);
     }catch(error){
@@ -70,30 +85,27 @@ const showDetail = asyncHandler(async (req, res) => {
  * POST /api/studyboard/create
  */
 const createPost = asyncHandler(async (req, res) => {
-    const { title, body, pic1, pic2 }= req.body;
-    // const id= "user123" // id값은 쿠키를 통해 받아오도록 수정할 것
-    const id= req.user.email;
+    const { title, body, pic1, pic2 } = req.body;
+    const id = req.user.email;
 
-    try{
+    try {
         // Base64 문자열을 바이너리 데이터로 변환
-        const pic1Binary = pic1 ? base64ToBinary(pic1) : null;
-        const pic2Binary = pic2 ? base64ToBinary(pic2) : null;
+        const pic1Data = pic1 ? base64ToBinary(pic1) : null;
+        const pic2Data = pic2 ? base64ToBinary(pic2) : null;
 
-        const newData= await StudyBoard.create({
+        const newData = await StudyBoard.create({
             id,
             title,
             body,
-            pic1: pic1Binary,
-            pic2: pic2Binary
-        })
+            pic1: pic1Data ? pic1Data.binaryData : null,
+            pic2: pic2Data ? pic2Data.binaryData : null
+        });
         res.status(201).json(newData);
-        // 새로 생성된 레코드를 JSON 형태로 반환 (기본키와 기본값 포함)
-        // res.status(201).json(newPost.toJSON());
-    }catch(error){
-        res.status(500);
+    } catch (error) {
+        console.error("Error creating post:", error);
+        res.status(500).json({ message: "게시글 작성 중 오류." });
     }
 });
-
 /**
  * 게시글 수정 내용을 DB에 넣기
  * PUT /api/studyboard/update/:key
