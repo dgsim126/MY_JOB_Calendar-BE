@@ -46,7 +46,11 @@ const login = asyncHandler(async (req, res) => {
 // POST /api/logout
 const logout = (req, res) => {
   try {
-    res.clearCookie("token");
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'None',
+    });
     res.status(200).send("Logout successful");
   } catch (error) {
     console.error(error);
