@@ -33,6 +33,7 @@ const showAllList = asyncHandler(async (req, res) => {
         const modifiedRecruitmentNoticeInfos = recruitmentNoticeInfos.map(info => ({
             ...info,
             stack: info.stack ? info.stack.split(',').map(item => item.trim()) : []
+            //recruit_part: info.recruit_part ? info.recruit_part.split(',').map(item => item.trim()) : []
         }));
 
         res.status(200).json(modifiedRecruitmentNoticeInfos);
@@ -383,8 +384,15 @@ const searchByTitle = asyncHandler(async (req, res) => {
         if (posts.length === 0) {
             return res.status(404).json({ message: "게시글을 찾을 수 없습니다." });
         }
+        // 게시글을 변환하여 stack 문자열을 배열로 변환
+        const transformedPosts = posts.map(post => {
+            return {
+                ...post.toJSON(), // Sequelize 인스턴스를 일반 객체로 변환
+                stack: post.stack ? post.stack.split(',').map(item => item.trim()) : [] // stack 문자열을 분리하고 공백 제거
+            };
+        });
 
-        res.status(200).json(posts);
+        res.status(200).json(transformedPosts);
     } catch (error) {
         console.error('Error searching posts by title:', error);
         res.status(500).json({ message: "서버 오류가 발생했습니다." });

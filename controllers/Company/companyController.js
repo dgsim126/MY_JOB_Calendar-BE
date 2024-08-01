@@ -294,6 +294,7 @@ const deleteCompany = asyncHandler(async (req, res) => {
  */
 const searchByCompanyName = asyncHandler(async (req, res) => {
   const { companyName } = req.body; // 요청 본문에서 제목을 가져옴
+  console.log("받은 검색 내용", companyName);
 
   if (!companyName) {
     return res.status(400).json({ message: "검색어가 필요합니다." });
@@ -307,6 +308,8 @@ const searchByCompanyName = asyncHandler(async (req, res) => {
         },
       },
     });
+
+    console.log("찾은 결과", posts);
 
     if (posts.length === 0) {
       return res.status(404).json({ message: "게시글을 찾을 수 없습니다." });
