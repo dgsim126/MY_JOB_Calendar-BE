@@ -82,6 +82,26 @@ const getProfile = asyncHandler(async (req, res) => {
             return res.status(404).send('User not found');
         }
 
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 수정!!!!!!!!!!!!!!!!!
+        const transformStackToArray = (stackString) => {
+            return stackString ? stackString.split(',').map(item => item.trim()) : [];
+        };
+
+        const transformedUser = {
+            ...user.toJSON(),
+            Scraps: user.Scraps.map(scrap => ({
+                ...scrap.toJSON(),
+                Company: scrap.Company ? {
+                    ...scrap.Company,
+                    stack: transformStackToArray(scrap.Company.stack)
+                } : null,
+                RecruitmentNoticeInfoModel: scrap.RecruitmentNoticeInfoModel ? {
+                    ...scrap.RecruitmentNoticeInfoModel,
+                    stack: transformStackToArray(scrap.RecruitmentNoticeInfoModel.stack)
+                } : null
+            }))
+        };
+
         const email = user.email;
 
         const freeboardPosts = await Freeboard.findAll({
@@ -93,7 +113,7 @@ const getProfile = asyncHandler(async (req, res) => {
         });
 
         res.status(200).json({
-            user,
+            user: transformedUser, // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 수정!!!!!!!!!!!!!!!!!
             freeboardPosts,
             studyboardPosts
         });

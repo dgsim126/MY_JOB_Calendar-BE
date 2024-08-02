@@ -367,6 +367,7 @@ const deleteInfoAdmin = asyncHandler(async (req, res) => {
  */
 const searchByTitle = asyncHandler(async (req, res) => {
     const { title } = req.body; // 요청 본문에서 제목을 가져옴
+    console.log("가져온 값:", title);
 
     if (!title) {
         return res.status(400).json({ message: "검색어가 필요합니다." });
@@ -396,8 +397,10 @@ const searchByTitle = asyncHandler(async (req, res) => {
                     attributes: [],
                 },
             ],
-            group: ["recruitmentNoticeInfoModel.key"],
+            group: ["RecruitmentNoticeInfoModel.key"],
         });
+
+        console.log("찾은 값: ", posts);
 
         if (posts.length === 0) {
             return res.status(404).json({ message: "게시글을 찾을 수 없습니다." });
@@ -409,6 +412,8 @@ const searchByTitle = asyncHandler(async (req, res) => {
                 stack: post.stack ? post.stack.split(',').map(item => item.trim()) : [] // stack 문자열을 분리하고 공백 제거
             };
         });
+
+        console.log("변환한 값: ", transformedPosts);
 
         res.status(200).json(transformedPosts);
     } catch (error) {
