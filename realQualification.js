@@ -626,7 +626,32 @@ const qualifications = [
       "agency": "ICQA",
       "link": "https://www.icqa.or.kr/cn/",
       "fee": "78000원"
-  }
+  },
+  {
+    "title": "정보처리기능사 4회 ",
+    "startdate": "2024-08-20",
+    "enddate": "2024-08-23",
+    "exam_startdate": "2024-09-08",
+    "exam_enddate": "2024-09-12",
+    "resultdate": "2024-09-25",
+    "logo": "https://www.sh-news.com/imgdata/sh-news_com/202006/2020062937455075.png",
+    "pic1": null,
+    "pic2": null,
+    "pic3": null,
+    "pic4": null,
+    "pic5": null,
+    "body": "과학기술정보통신부에서 주관하고 한국산업인력공단에서 시행하는 정보기술 분야의 기능사 자격증으로, 정보처리에 있어서 가장 기초적인 것을 물어보는 시험이다.",
+    "pass_standard": "100점을 만점으로 하여 60점 이상",
+    "workview": "지방공무원 공채시험 가산점 자격증 중 가장 가산점이 적은 0.5점짜리 자격증이지만, 워낙에 난이도가 낮으면서 시험을 치르는 데에 준비하는 기간이 짧기 때문에 가장 부담없이 도전할 만한 자격증으로 인식되고 있다",
+    "qualification": "제한 없음",
+    "testinfo": "필기시험 과목은 전자계산기일반, 패키지활용, PC운영체제, 정보통신일반으로 구성되며, 시험문제는 과목구분 없이 60문제로 이루어진다. 시험 시간은 1시간이고, CBT 시험인 기능사 시험이 다 그렇듯 시험을 종료하면 바로 합격여부를 알 수 있다.",
+    "problems": null,
+    "qualification_name": "정보처리기능사 필기",
+    "relate_department": "과학기술정보통신부",
+    "agency": "한국산업인력공단",
+    "link": "https://www.q-net.or.kr/man001.do?imYn=Y&gSite=Q",
+    "fee": "14500원"
+}
 ];
 
 
