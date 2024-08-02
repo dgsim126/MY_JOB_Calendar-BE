@@ -301,7 +301,7 @@ const recruitmentNotices = [
 },
 {
   "title": "[경력] 응용SW개발자(JAVA,JSP, SQL) 채용 공고",
-  "startdate": "2024-07-17T09:00:00.000Z",
+  "startdate": "2024-08-17T09:00:00.000Z",
   "enddate": "2024-09-15T23:59:00.000Z",
   "resultdate": null,
   "pic1": "",

@@ -14,7 +14,7 @@ const showPopular = asyncHandler(async (req, res) => {
         // QualificationInfo에서 key값이 1, 3, 5인 튜플을 다 가져옴
         const qualificationData = await QualificationInfo.findAll({
             where: {
-                key: [1, 3, 5]
+                key: [5, 7, 20, 26]
             },
             attributes: ['key', 'title', 'startdate', 'enddate']
         });
@@ -28,7 +28,7 @@ const showPopular = asyncHandler(async (req, res) => {
         // RecruitmentNoticeInfo에서 key값이 1, 3, 5인 튜플을 다 가져옴
         const recruitmentNoticeData = await RecruitmentNoticeInfo.findAll({
             where: {
-                key: [1, 3, 5]
+                key: [8, 12, 13, 26]
             },
             attributes: ['key', 'title', 'startdate', 'enddate']
         });
@@ -42,7 +42,7 @@ const showPopular = asyncHandler(async (req, res) => {
         // StudentSupportInfo에서 key값이 2, 4, 6인 튜플을 다 가져옴
         const studentSupportData = await StudentSupportInfo.findAll({
             where: {
-                key: [2, 4, 5]
+                key: [2, 6, 10, 13]
             },
             attributes: ['key', 'title', 'startdate', 'enddate']
         });
