@@ -396,7 +396,7 @@ const searchByTitle = asyncHandler(async (req, res) => {
                     attributes: [],
                 },
             ],
-            group: ["recruitmentNoticeInfoModel.key"],
+            group: ["RecruitmentNoticeInfoModel.key"],
         });
 
         if (posts.length === 0) {
