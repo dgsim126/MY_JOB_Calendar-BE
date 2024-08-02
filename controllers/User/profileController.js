@@ -63,11 +63,11 @@ const getProfile = asyncHandler(async (req, res) => {
                     },
                     {
                         model: StudentSupportInfo,
-                        attributes: ['title', 'body', 'agency', 'startdate', 'enddate', 'pic1']
+                        attributes: ['title', 'body', 'agency', 'startdate', 'enddate', 'pic1', 'logo']
                     },
                     {
                         model: QualificationInfo,
-                        attributes: ['title', 'body', 'agency', 'startdate', 'enddate', 'pic1']
+                        attributes: ['title', 'body', 'agency', 'startdate', 'enddate', 'logo', 'pic1']
                     },
                     {
                         model: RecruitmentNoticeInfo,
