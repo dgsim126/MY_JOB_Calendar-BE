@@ -14,7 +14,7 @@ const showAllList = asyncHandler(async (req, res) => {
         const qualificationInfos = await QualificationInfo.findAll({
             attributes: [
                 'key', // 기본 키 컬럼
-                'title', 'body', 'agency', 'startdate', 'enddate', 'pic1',
+                'title', 'body', 'agency', 'startdate', 'enddate', 'logo',
                 [Sequelize.fn('COUNT', Sequelize.col('Scraps.key')), 'scrapCount'] // 스크랩 수 계산
             ],
             include: [

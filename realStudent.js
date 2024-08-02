@@ -23,7 +23,7 @@ const studentSupports = [
     },
     {
       "title": "세종 전문과학기술업 빈일자리 채움 지원사업",
-      "startdate": "2024-03-01T00:00:00.000Z",
+      "startdate": "2024-09-01T00:00:00.000Z",
       "enddate": "2024-12-31T23:59:59.000Z",
       "resultdate": "2024-12-13T00:00:00.000Z",
       "logo": "sejongcci_logo.png",
@@ -176,7 +176,7 @@ const studentSupports = [
     {
       "title": "세종 청년 취업박람회",
       "startdate": "2023-09-26T00:00:00.000Z",
-      "enddate": "2023-09-26T23:59:59.000Z",
+      "enddate": "2023-09-27T23:59:59.000Z",
       "resultdate": null,
       "logo": "https://www.jobaram.com/public/images/layout/logo3.png",
       "pic1": "https://www.jobaram.com/_files/pages/20240719//f85187ec4a951d1c79ef9e0acd51dfd7.jpg",

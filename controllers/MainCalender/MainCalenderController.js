@@ -6,6 +6,68 @@ const Scrap = require('../../models/Scrap/scrap'); // 스크랩 테이블
 const User = require('../../models/User/user'); // User 모델
 
 /**
+ * 인기 상위 9개 보여주기
+ * GET /api/main/show
+ */
+const showPopular = asyncHandler(async (req, res) => {
+    try {
+        // QualificationInfo에서 key값이 1, 3, 5인 튜플을 다 가져옴
+        const qualificationData = await QualificationInfo.findAll({
+            where: {
+                key: [5, 7, 20, 26]
+            },
+            attributes: ['key', 'title', 'startdate', 'enddate']
+        });
+
+        // QualificationInfo 데이터에 'whatis' 속성을 추가
+        const modifiedQualificationData = qualificationData.map(qualification => ({
+            ...qualification.toJSON(),
+            whatis: 'qualification'
+        }));
+
+        // RecruitmentNoticeInfo에서 key값이 1, 3, 5인 튜플을 다 가져옴
+        const recruitmentNoticeData = await RecruitmentNoticeInfo.findAll({
+            where: {
+                key: [8, 12, 13, 26]
+            },
+            attributes: ['key', 'title', 'startdate', 'enddate']
+        });
+
+        // RecruitmentNoticeInfo 데이터에 'whatis' 속성을 추가
+        const modifiedRecruitmentNoticeData = recruitmentNoticeData.map(recruitmentNotice => ({
+            ...recruitmentNotice.toJSON(),
+            whatis: 'recruitmentNotice'
+        }));
+
+        // StudentSupportInfo에서 key값이 2, 4, 6인 튜플을 다 가져옴
+        const studentSupportData = await StudentSupportInfo.findAll({
+            where: {
+                key: [2, 6, 10, 13]
+            },
+            attributes: ['key', 'title', 'startdate', 'enddate']
+        });
+
+        // StudentSupportInfo 데이터에 'whatis' 속성을 추가
+        const modifiedStudentSupportData = studentSupportData.map(studentSupport => ({
+            ...studentSupport.toJSON(),
+            whatis: 'studentSupport'
+        }));
+
+        // 총 9개의 튜플을 묶어서 보냄
+        const combinedData = [
+            ...modifiedQualificationData,
+            ...modifiedRecruitmentNoticeData,
+            ...modifiedStudentSupportData
+        ];
+
+        res.status(200).json(combinedData);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: '서버 오류' });
+    }
+});
+
+/**
  * 모든 게시글 가져오기
  * GET /api/main
  */
@@ -87,4 +149,4 @@ const showAll = asyncHandler(async (req, res) => {
         res.status(500).json({ message: '서버 오류' });
     }
 });
-module.exports = { showAll };
+module.exports = { showAll, showPopular };
