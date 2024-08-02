@@ -18,7 +18,8 @@ class Studyboard extends Sequelize.Model {
                 allowNull: false
             },
             body: {
-                type: DataTypes.STRING,
+                // type: DataTypes.STRING,
+                type: DataTypes.TEXT,
                 allowNull: false
             },
             date: {
