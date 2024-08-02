@@ -53,7 +53,7 @@ const getCompanyById = asyncHandler(async (req, res) => {
   const { companyID } = req.params;
   const user = req.user;
   const userID = user ? user.userID : null;
-  
+
   try {
     const company = await Company.findByPk(companyID, {
       include: [
@@ -307,6 +307,21 @@ const searchByCompanyName = asyncHandler(async (req, res) => {
           [Op.like]: `%${companyName}%`, // 제목에 검색어가 포함된 게시글 찾기
         },
       },
+      attributes: {
+        include: [
+          [
+            sequelize.fn("COUNT", sequelize.col("Scraps.companyID")),
+            "scrapCount",
+          ]
+        ]
+      },
+      include: [
+        {
+          model: Scrap,
+          attributes: []
+        }
+      ],
+      group: ['Company.companyID']
     });
 
     console.log("찾은 결과", posts);

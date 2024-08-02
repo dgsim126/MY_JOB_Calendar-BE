@@ -378,7 +378,25 @@ const searchByTitle = asyncHandler(async (req, res) => {
                 title: {
                     [Op.like]: `%${title}%` // 제목에 검색어가 포함된 게시글 찾기
                 }
-            }
+            },
+            attributes: {
+                include: [
+                    [
+                        Sequelize.fn(
+                            "COUNT",
+                            Sequelize.col("Scraps.recruitmentNoticeInfoKey")
+                        ),
+                        "scrapCount",
+                    ]
+                ]
+            },
+            include: [
+                {
+                    model: Scrap,
+                    attributes: [],
+                },
+            ],
+            group: ["recruitmentNoticeInfoModel.key"],
         });
 
         if (posts.length === 0) {
