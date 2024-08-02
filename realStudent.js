@@ -46,7 +46,7 @@ const studentSupports = [
       "enddate": "2024-08-31T23:59:59.000Z",
       "resultdate": "2024-12-13T00:00:00.000Z",
       "logo": "ssea_logo.png",
-      "pic1": "https://cafeptthumb-phinf.pstatic.net/MjAyNDA0MjJfMjk1/MDAxNzEzNzY5NzU1MTk0.C5L8d2f3hWw5dLdTS6RZLBXY3_grguZDu0cDYoGJwyEg.TrB4gyIfiaMh4NvFxozss1SiK6nSOJQnYAqZi5V5jCQg.PNG/920%EF%BC%BFBBS%EF%BC%BF0000056751UKvNy610.png?type=w1600",
+      "pic1": "https://cdn.dtnews24.com/news/photo/202407/774914_391577_4238.png",
       "pic2": "",
       "pic3": "",
       "pic4": "",
