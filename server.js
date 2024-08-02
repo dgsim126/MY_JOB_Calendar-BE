@@ -54,7 +54,7 @@ app.use(cors({
 
 // 데이터베이스 연결
 sequelize
-.sync({ force: false }) // 현재 모델 상태 반영(배포 시 false로 변환) // true 시 값 날라감
+.sync({ force: true }) // 현재 모델 상태 반영(배포 시 false로 변환) // true 시 값 날라감
 .then(() => {
     console.log('데이터베이스 연결 성공');
 })
