@@ -30,6 +30,11 @@
 
 ---
 
+## 수상
+- **SW융합클러스터 2.0 디지털 콘텐츠 DX 해커톤 우수상**  
+
+---
+
 ## 관련 이미지
 
 ![이미지 1](https://github.com/user-attachments/assets/30a0c63c-f9ca-469d-83fe-1f2380278158)
