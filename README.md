@@ -1,3 +1,10 @@
+<h1>My Job Calendar</h1>
+- 목적: 세종시 취업공고, 세종시 학생지원사업, 자격증 정보를 캘린더로 제공
+- 주요 기능:
+&nbsp 1. 내가 원하는 내용 스크랩
+&nbsp 2. 스크랩한 정보 구글 캘린더와 연동
+&nbsp 3. 커뮤니티 공간
+
 ![image](https://github.com/user-attachments/assets/30a0c63c-f9ca-469d-83fe-1f2380278158)
 ![image](https://github.com/user-attachments/assets/9dfa820b-ca01-411d-bb85-210b2e1a93f2)
 ![image](https://github.com/user-attachments/assets/296c5e5d-f374-4864-90f7-13d96713c927)
