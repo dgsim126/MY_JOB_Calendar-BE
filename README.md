@@ -25,7 +25,7 @@
   - Frontend: 2명  
   - Backend: 3명
 - **기술 스택:**
-  - Fronted: 선엽아 여기 뭐 넣어?
+  - Fronted: React.js, styled-componemts, Recoil, Git, Naver cloud
   - Backend: Node.js, Express, Docker, Google Cloud, git, AWS, MariaDB
 
 ---
